@@ -4,6 +4,8 @@ package Patient;
 option go_package="./pkg/pb";
 service Patient{
 	rpc PatientSignUp(PatientSignUpRequest) returns (PatientSignUpResponse) {};
+	rpc PatientLogin(PatientLoginRequest)returns (PatientLoginResponse){};
+
 }
 message PatientSignUpRequest{
 	string fullname=1;
@@ -24,4 +26,13 @@ message PatientSignUpResponse {
 	PatientDetails  PatientDetails=2;
 	string AccessToken=3; 
 	string RefreshToken =4;
+}
+message PatientLoginRequest{
+	string Email=1;
+	string password=2;
+}
+message PatientLoginResponse{
+	PatientDetails  PatientDetails=1;
+	string AccessToken=2; 
+	string RefreshToken =3;
 }

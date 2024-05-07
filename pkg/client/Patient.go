@@ -51,3 +51,26 @@ func (p *patientClient) PatientsSignUp(patient models.PatientSignUp) (models.Tok
 	}, nil
 
 }
+func (p *patientClient)PatientLogin(patient models.PatientLogin)(models.TokenPatient,error)  {
+	fmt.Println(patient,"patient details")
+	res,err:=p.Client.PatientLogin(context.Background(), &pb.PatientLoginRequest{
+		Email: patient.Email,
+		Password: patient.Password,
+	})
+	if err!=nil{
+		return models.TokenPatient{},err
+	}
+	fmt.Println(res,"REsponse")
+	patientdetails:=models.SignupdetailResponse{
+		Id: uint(res.PatientDetails.Id),
+		Fullname: res.PatientDetails.Fullname,
+		Email: res.PatientDetails.Email,
+		Gender: res.PatientDetails.Gender,
+		Contactnumber: res.PatientDetails.Contactnumber,
+	}
+	return models.TokenPatient{
+		Patient: patientdetails,
+		AccessToken: res.AccessToken,
+		RefreshToken: res.RefreshToken,
+	},nil
+}

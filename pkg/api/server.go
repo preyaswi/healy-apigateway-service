@@ -13,8 +13,10 @@ type ServerHTTP struct {
 
 func NewServerHTTP(patientHandler *handler.PatientHandler) *ServerHTTP {
 	route := fiber.New()
+	patient:=route.Group("/patient")
 
-	route.Post("/patient/signup", patientHandler.PatientSignup)
+	patient.Post("/signup", patientHandler.PatientSignup)
+	patient.Post("/login",patientHandler.PatientLogin)
 	return &ServerHTTP{
 		engine: route,
 	}

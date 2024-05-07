@@ -20,3 +20,7 @@ type TokenPatient struct {
 	RefreshToken string
 }
 
+type PatientLogin struct{
+	Email string
+	Password string
+}
