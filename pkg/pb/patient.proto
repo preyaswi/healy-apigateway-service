@@ -1,0 +1,27 @@
+syntax="proto3";
+
+package Patient;
+option go_package="./pkg/pb";
+service Patient{
+	rpc PatientSignUp(PatientSignUpRequest) returns (PatientSignUpResponse) {};
+}
+message PatientSignUpRequest{
+	string fullname=1;
+	string email=2;
+	string password=3;
+	string confirmpassword=4;
+	string gender=6;
+	string contactnumber=7;
+}
+message PatientDetails {
+	uint64 id=1;
+    string fullname=2;
+    string email=3;
+	string gender=5;
+    string contactnumber=6;
+}
+message PatientSignUpResponse {
+	PatientDetails  PatientDetails=2;
+	string AccessToken=3; 
+	string RefreshToken =4;
+}
