@@ -5,9 +5,10 @@ import "github.com/spf13/viper"
 type Config struct {
 	Port    string `mapstructure:"PORT"`
 	PatientSvc string `mapstructure:"PATIENT_SVC"`
+	DoctorSvc string `mapstructure:"DOCTOR_SVC"`
 }
 
-var envs = []string{"PORT", "PATIENT_SVC"}
+var envs = []string{"PORT", "PATIENT_SVC","DOCTOR_SVC"}
 
 func LoadConfig() (Config, error) {
 	var config Config

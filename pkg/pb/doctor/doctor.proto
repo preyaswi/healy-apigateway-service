@@ -1,0 +1,43 @@
+syntax="proto3";
+package doctor;
+option go_package="./pkg/pb/doctor";
+
+service Doctor{
+    rpc DoctorSignUp(DoctorSignUpRequest) returns (DoctorSignUpResponse) {};
+	rpc DoctorLogin(DoctorLoginRequest)returns (DoctorLoginResponse){};
+}
+message DoctorSignUpRequest{
+    string full_name = 1;
+    string email = 2;
+    string phone_number = 3;
+    string password = 4;
+    string confirm_password = 5;
+    string specialization = 6;
+    int32 years_of_experience = 7;
+    string license_number = 8;
+
+}
+message DoctorDetail{
+    uint64 id=1;
+    string full_name = 2;
+    string email = 3;
+    string phone_number = 4;
+    string specialization = 5;
+    int32 years_of_experience = 6;
+    string license_number = 7;
+
+}
+message DoctorSignUpResponse{
+    DoctorDetail DoctorDetail=1;
+	string AccessToken=2; 
+	string RefreshToken =3;    
+}
+message DoctorLoginRequest{
+	string Email=1;
+	string password=2;    
+}
+message DoctorLoginResponse{
+    DoctorDetail DoctorDetail=1;
+	string AccessToken=2; 
+	string RefreshToken =3;    
+}

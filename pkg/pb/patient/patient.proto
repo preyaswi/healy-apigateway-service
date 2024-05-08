@@ -1,7 +1,7 @@
 syntax="proto3";
 
-package Patient;
-option go_package="./pkg/pb";
+package patient;
+option go_package="./pkg/pb/patient";
 service Patient{
 	rpc PatientSignUp(PatientSignUpRequest) returns (PatientSignUpResponse) {};
 	rpc PatientLogin(PatientLoginRequest)returns (PatientLoginResponse){};

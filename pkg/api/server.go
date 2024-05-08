@@ -5,18 +5,25 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 type ServerHTTP struct {
 	engine *fiber.App
 }
 
-func NewServerHTTP(patientHandler *handler.PatientHandler) *ServerHTTP {
+func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler.DoctorHandler) *ServerHTTP {
 	route := fiber.New()
-	patient:=route.Group("/patient")
+	route.Use(logger.New())
+	DoctorRoutes(route,doctorHandler)
+	PatientRoutes(route,patientHandler)
 
-	patient.Post("/signup", patientHandler.PatientSignup)
-	patient.Post("/login",patientHandler.PatientLogin)
+	
+	// patient.Use(middleware.UserAuthMiddleware())
+	// {
+	// 	patient.Get("/doctor",)
+	// }
+
 	return &ServerHTTP{
 		engine: route,
 	}
