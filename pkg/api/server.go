@@ -12,11 +12,12 @@ type ServerHTTP struct {
 	engine *fiber.App
 }
 
-func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler.DoctorHandler) *ServerHTTP {
+func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler.DoctorHandler,adminHandler *handler.AdminHandler) *ServerHTTP {
 	route := fiber.New()
 	route.Use(logger.New())
 	DoctorRoutes(route,doctorHandler)
 	PatientRoutes(route,patientHandler)
+	AdminRoutes(route,adminHandler)
 
 	
 	// patient.Use(middleware.UserAuthMiddleware())

@@ -6,9 +6,10 @@ type Config struct {
 	Port    string `mapstructure:"PORT"`
 	PatientSvc string `mapstructure:"PATIENT_SVC"`
 	DoctorSvc string `mapstructure:"DOCTOR_SVC"`
+	AdminSvc string `mapstructure:"ADMIN_SVC"`
 }
 
-var envs = []string{"PORT", "PATIENT_SVC","DOCTOR_SVC"}
+var envs = []string{"PORT", "PATIENT_SVC","DOCTOR_SVC","ADMIN_SVC"}
 
 func LoadConfig() (Config, error) {
 	var config Config
