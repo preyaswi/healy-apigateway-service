@@ -78,3 +78,28 @@ func (d *doctorClient) DoctorLogin(login models.DoctorLogin) (models.DoctorSignU
 	}, nil
 
 }
+func (d *doctorClient)DoctorsDetails() ([]models.DoctorsDetails,error) {
+	fmt.Println("hello")
+	response,err:=d.Client.DoctorsDetail(context.Background(),&pb.Doreq{})
+	if err!=nil{
+		return []models.DoctorsDetails{},err
+	}
+	doctorsDetails := make([]models.DoctorsDetails, len(response.DoctorsDetailr))
+    for i, detail := range response.DoctorsDetailr {
+        doctorDetail := models.DoctorDetail{
+            Id:                uint(detail.Id),
+            FullName:          detail.FullName,
+            Email:             detail.Email,
+            PhoneNumber:       detail.PhoneNumber,
+            Specialization:    detail.Specialization,
+            YearsOfExperience: detail.YearsOfExperience,
+            LicenseNumber:     detail.LicenseNumber,
+        }
+        doctorsDetails[i] = models.DoctorsDetails{
+            DoctorDetail: doctorDetail,
+            Rating:       detail.Rating,
+        }
+    }
+
+    return doctorsDetails, nil
+}

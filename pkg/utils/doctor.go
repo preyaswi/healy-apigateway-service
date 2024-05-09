@@ -28,3 +28,7 @@ type DoctorLogin struct {
 	Email    string
 	Password string
 }
+type DoctorsDetails struct{
+	DoctorDetail DoctorDetail
+	Rating int32
+}

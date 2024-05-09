@@ -16,7 +16,7 @@ func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler
 	route := fiber.New()
 	route.Use(logger.New())
 	DoctorRoutes(route,doctorHandler)
-	PatientRoutes(route,patientHandler)
+	PatientRoutes(route,patientHandler,doctorHandler)
 	AdminRoutes(route,adminHandler)
 
 	

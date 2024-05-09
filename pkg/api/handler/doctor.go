@@ -59,3 +59,12 @@ func (d *DoctorHandler) DoctorLogin(c *fiber.Ctx) error {
 	success := response.ClientResponse("doctor logined succesfully", doctor, nil)
 	return c.Status(201).JSON(success)
 }
+func (d *DoctorHandler)DoctorsDetails(c *fiber.Ctx)error  {
+	doctor,err:=d.Grpc_Client.DoctorsDetails()
+	if err!=nil{
+		errs := response.ClientResponse("couldnt fetch doctors data", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errs)
+	}
+	success := response.ClientResponse("doctors data fetched succesfully", doctor, nil)
+	return c.Status(201).JSON(success)
+}
