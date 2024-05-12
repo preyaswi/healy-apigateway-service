@@ -72,7 +72,6 @@ func (d *DoctorHandler)DoctorsDetails(c *fiber.Ctx)error  {
 }
 func (d *DoctorHandler)IndividualDoctor(c *fiber.Ctx)error  {
 	doctorID:=c.Params("doctor_id")
-	fmt.Println(doctorID,"this is th doctor id ")
 	doctor,err:=d.Grpc_Client.IndividualDoctor(doctorID)
 	if err!=nil{
 		errs:=response.ClientResponse("couldn't fetch octors data",nil,err.Error())
