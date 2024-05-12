@@ -5,27 +5,27 @@ option go_package="./pkg/pb/patient";
 service Patient{
 	rpc PatientSignUp(PatientSignUpRequest) returns (PatientSignUpResponse) {};
 	rpc PatientLogin(PatientLoginRequest)returns (PatientLoginResponse){};
-
+	rpc IndPatientDetails(idreq)returns(PatientDetails){};
 }
 message PatientSignUpRequest{
 	string fullname=1;
 	string email=2;
 	string password=3;
 	string confirmpassword=4;
-	string gender=6;
-	string contactnumber=7;
+	string gender=5;
+	string contactnumber=6;
 }
 message PatientDetails {
 	uint64 id=1;
     string fullname=2;
     string email=3;
-	string gender=5;
-    string contactnumber=6;
+	string gender=4;
+    string contactnumber=5;
 }
 message PatientSignUpResponse {
-	PatientDetails  PatientDetails=2;
-	string AccessToken=3; 
-	string RefreshToken =4;
+	PatientDetails  PatientDetails=1;
+	string AccessToken=2; 
+	string RefreshToken =3;
 }
 message PatientLoginRequest{
 	string Email=1;
@@ -35,4 +35,7 @@ message PatientLoginResponse{
 	PatientDetails  PatientDetails=1;
 	string AccessToken=2; 
 	string RefreshToken =3;
+}
+message idreq{
+	uint64 user_id=1;
 }

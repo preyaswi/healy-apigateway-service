@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"healy-apigateway/pkg/api/response"
 	interfaces "healy-apigateway/pkg/client/interface"
 	models "healy-apigateway/pkg/utils"
@@ -60,11 +61,23 @@ func (d *DoctorHandler) DoctorLogin(c *fiber.Ctx) error {
 	return c.Status(201).JSON(success)
 }
 func (d *DoctorHandler)DoctorsDetails(c *fiber.Ctx)error  {
+	fmt.Println("hello")
 	doctor,err:=d.Grpc_Client.DoctorsDetails()
 	if err!=nil{
 		errs := response.ClientResponse("couldnt fetch doctors data", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
 	}
 	success := response.ClientResponse("doctors data fetched succesfully", doctor, nil)
+	return c.Status(201).JSON(success)
+}
+func (d *DoctorHandler)IndividualDoctor(c *fiber.Ctx)error  {
+	doctorID:=c.Params("doctor_id")
+	fmt.Println(doctorID,"this is th doctor id ")
+	doctor,err:=d.Grpc_Client.IndividualDoctor(doctorID)
+	if err!=nil{
+		errs:=response.ClientResponse("couldn't fetch octors data",nil,err.Error())
+		return c.Status(400).JSON(errs)
+	}
+	success:=response.ClientResponse("returned individual doctor data",doctor,nil)
 	return c.Status(201).JSON(success)
 }

@@ -6,6 +6,7 @@ import (
 	models "healy-apigateway/pkg/utils"
 	"net/http"
 
+	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,6 +24,10 @@ func (ad *AdminHandler) LoginHandler(c *fiber.Ctx) error {
 	var adminDetails models.AdminLogin
 	if err := c.BodyParser(&adminDetails); err != nil {
 		errs := response.ClientResponse("Details not in correct format", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errs)
+	}
+	if err := validator.New().Struct(adminDetails); err != nil {
+		errs := response.ClientResponse("Constraints not satisfied", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
 	}
 

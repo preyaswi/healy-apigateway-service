@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Patient_PatientSignUp_FullMethodName = "/patient.Patient/PatientSignUp"
-	Patient_PatientLogin_FullMethodName  = "/patient.Patient/PatientLogin"
+	Patient_PatientSignUp_FullMethodName     = "/patient.Patient/PatientSignUp"
+	Patient_PatientLogin_FullMethodName      = "/patient.Patient/PatientLogin"
+	Patient_IndPatientDetails_FullMethodName = "/patient.Patient/IndPatientDetails"
 )
 
 // PatientClient is the client API for Patient service.
@@ -29,6 +30,7 @@ const (
 type PatientClient interface {
 	PatientSignUp(ctx context.Context, in *PatientSignUpRequest, opts ...grpc.CallOption) (*PatientSignUpResponse, error)
 	PatientLogin(ctx context.Context, in *PatientLoginRequest, opts ...grpc.CallOption) (*PatientLoginResponse, error)
+	IndPatientDetails(ctx context.Context, in *Idreq, opts ...grpc.CallOption) (*PatientDetails, error)
 }
 
 type patientClient struct {
@@ -57,12 +59,22 @@ func (c *patientClient) PatientLogin(ctx context.Context, in *PatientLoginReques
 	return out, nil
 }
 
+func (c *patientClient) IndPatientDetails(ctx context.Context, in *Idreq, opts ...grpc.CallOption) (*PatientDetails, error) {
+	out := new(PatientDetails)
+	err := c.cc.Invoke(ctx, Patient_IndPatientDetails_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PatientServer is the server API for Patient service.
 // All implementations must embed UnimplementedPatientServer
 // for forward compatibility
 type PatientServer interface {
 	PatientSignUp(context.Context, *PatientSignUpRequest) (*PatientSignUpResponse, error)
 	PatientLogin(context.Context, *PatientLoginRequest) (*PatientLoginResponse, error)
+	IndPatientDetails(context.Context, *Idreq) (*PatientDetails, error)
 	mustEmbedUnimplementedPatientServer()
 }
 
@@ -75,6 +87,9 @@ func (UnimplementedPatientServer) PatientSignUp(context.Context, *PatientSignUpR
 }
 func (UnimplementedPatientServer) PatientLogin(context.Context, *PatientLoginRequest) (*PatientLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PatientLogin not implemented")
+}
+func (UnimplementedPatientServer) IndPatientDetails(context.Context, *Idreq) (*PatientDetails, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IndPatientDetails not implemented")
 }
 func (UnimplementedPatientServer) mustEmbedUnimplementedPatientServer() {}
 
@@ -125,6 +140,24 @@ func _Patient_PatientLogin_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Patient_IndPatientDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Idreq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PatientServer).IndPatientDetails(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Patient_IndPatientDetails_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PatientServer).IndPatientDetails(ctx, req.(*Idreq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Patient_ServiceDesc is the grpc.ServiceDesc for Patient service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +172,10 @@ var Patient_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PatientLogin",
 			Handler:    _Patient_PatientLogin_Handler,
+		},
+		{
+			MethodName: "IndPatientDetails",
+			Handler:    _Patient_IndPatientDetails_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

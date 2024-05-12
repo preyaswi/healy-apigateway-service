@@ -2,6 +2,7 @@ package server
 
 import (
 	"healy-apigateway/pkg/api/handler"
+	"healy-apigateway/pkg/config"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -29,9 +30,10 @@ func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler
 		engine: route,
 	}
 }
-func (s *ServerHTTP) Start() {
-    log.Printf("starting server on :5000")
-    err := s.engine.Listen(":5000")
+func (s *ServerHTTP) Start(cfg config.Config) {
+	
+    log.Printf("starting server on :5080")
+    err := s.engine.Listen(cfg.Port)
     if err != nil {
         log.Fatalf("error while starting the server: %v", err)
     }

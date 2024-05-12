@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"healy-apigateway/pkg/helper"
 	"net/http"
 
@@ -21,6 +22,7 @@ func UserAuthMiddleware() fiber.Handler {
 			}
 		}
 		userID, userEmail, err := helper.ExtractUserIDFromToken(tokenString)
+		fmt.Println(userID)
 		if err != nil {
 			return c.Status(http.StatusUnauthorized).JSON(fiber.Map{
 				"error":   "Unauthorized",
@@ -29,6 +31,7 @@ func UserAuthMiddleware() fiber.Handler {
 		}
 		c.Locals("user_id", userID)
 		c.Locals("user_email", userEmail)
+		fmt.Println(userID,"userid")
 		return c.Next()
 	}
 }

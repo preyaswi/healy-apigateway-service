@@ -79,7 +79,6 @@ func (d *doctorClient) DoctorLogin(login models.DoctorLogin) (models.DoctorSignU
 
 }
 func (d *doctorClient)DoctorsDetails() ([]models.DoctorsDetails,error) {
-	fmt.Println("hello")
 	response,err:=d.Client.DoctorsDetail(context.Background(),&pb.Doreq{})
 	if err!=nil{
 		return []models.DoctorsDetails{},err
@@ -102,4 +101,20 @@ func (d *doctorClient)DoctorsDetails() ([]models.DoctorsDetails,error) {
     }
 
     return doctorsDetails, nil
+}
+func (d *doctorClient)IndividualDoctor(doctorId string)(models.IndDoctorDetail,error)  {
+	doctor,err:=d.Client.IndividualDoctor(context.Background(),&pb.Doid{DoctorId: doctorId})
+	if err!=nil{
+		return models.IndDoctorDetail{},err
+	}
+	return models.IndDoctorDetail{
+		Id: uint(doctor.Id),
+		FullName: doctor.FullName,
+		Email: doctor.Email,
+		PhoneNumber: doctor.PhoneNumber,
+		Specialization: doctor.Specialization,
+		YearsOfExperience: doctor.YearsOfExperience,
+		LicenseNumber: doctor.LicenseNumber,
+		Rating: doctor.Rating,
+	},nil
 }

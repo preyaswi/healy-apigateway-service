@@ -26,13 +26,14 @@ func NewPatientClient(cfg config.Config) interfaces.PatientClient {
 	}
 }
 func (p *patientClient) PatientsSignUp(patient models.PatientSignUp) (models.TokenPatient, error) {
+
 	res, err := p.Client.PatientSignUp(context.Background(), &pb.PatientSignUpRequest{
-		Fullname:        patient.Fullname,
+		Fullname:        patient.FullName,
 		Email:           patient.Email,
 		Password:        patient.Password,
-		Confirmpassword: patient.Confirmpassword,
+		Confirmpassword: patient.ConfirmPassword,
 		Gender:          patient.Gender,
-		Contactnumber:   patient.Contactnumber,
+		Contactnumber:   patient.ContactNumber,
 	})
 	if err != nil {
 		return models.TokenPatient{}, err
@@ -52,7 +53,6 @@ func (p *patientClient) PatientsSignUp(patient models.PatientSignUp) (models.Tok
 
 }
 func (p *patientClient) PatientLogin(patient models.PatientLogin) (models.TokenPatient, error) {
-	fmt.Println(patient, "patient details")
 	res, err := p.Client.PatientLogin(context.Background(), &pb.PatientLoginRequest{
 		Email:    patient.Email,
 		Password: patient.Password,
@@ -60,7 +60,6 @@ func (p *patientClient) PatientLogin(patient models.PatientLogin) (models.TokenP
 	if err != nil {
 		return models.TokenPatient{}, err
 	}
-	fmt.Println(res, "REsponse")
 	patientdetails := models.SignupdetailResponse{
 		Id:            uint(res.PatientDetails.Id),
 		Fullname:      res.PatientDetails.Fullname,
@@ -73,4 +72,18 @@ func (p *patientClient) PatientLogin(patient models.PatientLogin) (models.TokenP
 		AccessToken:  res.AccessToken,
 		RefreshToken: res.RefreshToken,
 	}, nil
+}
+func (p *patientClient) PatientDetails(user_id int)(models.SignupdetailResponse,error) {
+	res,err:=p.Client.IndPatientDetails(context.Background(),&pb.Idreq{UserId: uint64(user_id)})
+	if err!=nil{
+		return models.SignupdetailResponse{},err
+	}
+	fmt.Println(res.Id,"resid")
+	return models.SignupdetailResponse{
+		Id: uint(res.Id),
+		Fullname: res.Fullname,
+		Email: res.Email,
+		Gender: res.Gender,
+	 Contactnumber: res.Contactnumber,	
+	},nil
 }
