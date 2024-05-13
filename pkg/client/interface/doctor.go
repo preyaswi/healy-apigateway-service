@@ -8,4 +8,5 @@ type DoctorClient interface {
 	DoctorsDetails()([]models.DoctorsDetails,error)
 	IndividualDoctor(doctorId string)(models.IndDoctorDetail,error)
 	DoctorProfile(id int)(models.IndDoctorDetail,error)
+	RateDoctor(patientid int,doctorid string,rate models.Rate)(models.Rate,error)
 }

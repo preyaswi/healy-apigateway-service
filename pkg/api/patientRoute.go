@@ -23,7 +23,8 @@ func PatientRoutes(route *fiber.App,patientHandler *handler.PatientHandler,docto
 		{
 			doctor.Get("",doctorHandler.DoctorsDetails)
 			doctor.Get("/:doctor_id",doctorHandler.IndividualDoctor)
-			
+			doctor.Post("/rate/:doctor_id",doctorHandler.RateDoctor)
+
 		}
 		
 	}

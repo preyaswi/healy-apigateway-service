@@ -42,3 +42,6 @@ type IndDoctorDetail struct {
 	LicenseNumber     string
 	Rating int32
 }
+type Rate struct{
+	Rate uint `json:"rate" binding:"required" validate:"required,min=0,max=5" `
+}

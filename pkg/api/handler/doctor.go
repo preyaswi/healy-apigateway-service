@@ -60,28 +60,28 @@ func (d *DoctorHandler) DoctorLogin(c *fiber.Ctx) error {
 	success := response.ClientResponse("doctor logined succesfully", doctor, nil)
 	return c.Status(201).JSON(success)
 }
-func (d *DoctorHandler)DoctorsDetails(c *fiber.Ctx)error  {
+func (d *DoctorHandler) DoctorsDetails(c *fiber.Ctx) error {
 	fmt.Println("hello")
-	doctor,err:=d.Grpc_Client.DoctorsDetails()
-	if err!=nil{
+	doctor, err := d.Grpc_Client.DoctorsDetails()
+	if err != nil {
 		errs := response.ClientResponse("couldnt fetch doctors data", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
 	}
 	success := response.ClientResponse("doctors data fetched succesfully", doctor, nil)
 	return c.Status(201).JSON(success)
 }
-func (d *DoctorHandler)IndividualDoctor(c *fiber.Ctx)error  {
-	doctorID:=c.Params("doctor_id")
-	doctor,err:=d.Grpc_Client.IndividualDoctor(doctorID)
-	if err!=nil{
-		errs:=response.ClientResponse("couldn't fetch octors data",nil,err.Error())
+func (d *DoctorHandler) IndividualDoctor(c *fiber.Ctx) error {
+	doctorID := c.Params("doctor_id")
+	doctor, err := d.Grpc_Client.IndividualDoctor(doctorID)
+	if err != nil {
+		errs := response.ClientResponse("couldn't fetch octors data", nil, err.Error())
 		return c.Status(400).JSON(errs)
 	}
-	success:=response.ClientResponse("returned individual doctor data",doctor,nil)
+	success := response.ClientResponse("returned individual doctor data", doctor, nil)
 	return c.Status(201).JSON(success)
 }
-func (d *DoctorHandler) DoctorProfile(c *fiber.Ctx) error{
-	userId:=c.Locals("user_id").(int)
+func (d *DoctorHandler) DoctorProfile(c *fiber.Ctx) error {
+	userId := c.Locals("user_id").(int)
 	doctorDetail, err := d.Grpc_Client.DoctorProfile(userId)
 	if err != nil {
 		errorRes := response.ClientResponse("failed to retrieve doctor details", nil, err.Error())
@@ -90,5 +90,27 @@ func (d *DoctorHandler) DoctorProfile(c *fiber.Ctx) error{
 	}
 	successRes := response.ClientResponse("doctor Details", doctorDetail, nil)
 	return c.Status(200).JSON(successRes)
+
+}
+func (d *DoctorHandler) RateDoctor(c *fiber.Ctx) error {
+	patientid := c.Locals("user_id").(int)
+	doctor_id := c.Params("doctor_id")
+	var rate models.Rate
+	if err := c.BodyParser(&rate); err != nil {
+		errs := response.ClientResponse("Details are not in correct format", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errs)
+	}
+	if err := validator.New().Struct(rate); err != nil {
+		errs := response.ClientResponse("give rate between 1 to 5", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errs)
+	}
+	rated, err := d.Grpc_Client.RateDoctor(patientid, doctor_id, rate)
+	if err != nil {
+		errs := response.ClientResponse("couldn't add the rating", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errs)
+	}
+
+	successRes := response.ClientResponse("doctor Details", rated, nil)
+	return c.Status(202).JSON(successRes)
 
 }

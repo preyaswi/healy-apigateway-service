@@ -133,3 +133,16 @@ func (d *doctorClient)DoctorProfile(id int)(models.IndDoctorDetail,error)  {
 		LicenseNumber: res.LicenseNumber,
 	},nil
 }
+func (d *doctorClient)RateDoctor(patientid int,doctorid string,rate models.Rate)(models.Rate,error)  {
+	rated,err:=d.Client.RateDoctor(context.Background(),&pb.RateDoctorReq{
+		Patientid: uint64(patientid),
+		DoctorId: doctorid,
+		Rate: &pb.Rate{Rate: uint32(rate.Rate)},
+	})
+	if err!=nil{
+		return models.Rate{},err
+	}
+	return models.Rate{
+		Rate: uint(rated.Rate),
+	},nil
+}
