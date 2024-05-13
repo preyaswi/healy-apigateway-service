@@ -7,4 +7,5 @@ type DoctorClient interface {
 	DoctorLogin(models.DoctorLogin) (models.DoctorSignUpResponse, error)
 	DoctorsDetails()([]models.DoctorsDetails,error)
 	IndividualDoctor(doctorId string)(models.IndDoctorDetail,error)
+	DoctorProfile(id int)(models.IndDoctorDetail,error)
 }

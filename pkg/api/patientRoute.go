@@ -13,12 +13,17 @@ func PatientRoutes(route *fiber.App,patientHandler *handler.PatientHandler,docto
 	patient.Post("/login",patientHandler.PatientLogin)
 	patient.Use(middleware.UserAuthMiddleware())
 	{
-		patient.Get("/profile",patientHandler.PatientDetails)
+		profile:=patient.Group("/profile")
+		profile.Get("",patientHandler.PatientDetails)
+		profile.Put("",patientHandler.UpdatePatientDetails)
+		profile.Put("/update-password",patientHandler.UpdatePassword)
+
 
 		doctor:=patient.Group("/doctor")
 		{
 			doctor.Get("",doctorHandler.DoctorsDetails)
 			doctor.Get("/:doctor_id",doctorHandler.IndividualDoctor)
+			
 		}
 		
 	}

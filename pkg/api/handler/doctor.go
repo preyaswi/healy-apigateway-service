@@ -80,3 +80,15 @@ func (d *DoctorHandler)IndividualDoctor(c *fiber.Ctx)error  {
 	success:=response.ClientResponse("returned individual doctor data",doctor,nil)
 	return c.Status(201).JSON(success)
 }
+func (d *DoctorHandler) DoctorProfile(c *fiber.Ctx) error{
+	userId:=c.Locals("user_id").(int)
+	doctorDetail, err := d.Grpc_Client.DoctorProfile(userId)
+	if err != nil {
+		errorRes := response.ClientResponse("failed to retrieve doctor details", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errorRes)
+
+	}
+	successRes := response.ClientResponse("doctor Details", doctorDetail, nil)
+	return c.Status(200).JSON(successRes)
+
+}

@@ -23,6 +23,7 @@ const (
 	Doctor_DoctorLogin_FullMethodName      = "/doctor.Doctor/DoctorLogin"
 	Doctor_DoctorsDetail_FullMethodName    = "/doctor.Doctor/DoctorsDetail"
 	Doctor_IndividualDoctor_FullMethodName = "/doctor.Doctor/IndividualDoctor"
+	Doctor_DoctorProfile_FullMethodName    = "/doctor.Doctor/DoctorProfile"
 )
 
 // DoctorClient is the client API for Doctor service.
@@ -33,6 +34,7 @@ type DoctorClient interface {
 	DoctorLogin(ctx context.Context, in *DoctorLoginRequest, opts ...grpc.CallOption) (*DoctorLoginResponse, error)
 	DoctorsDetail(ctx context.Context, in *Doreq, opts ...grpc.CallOption) (*DoctorsDetailre, error)
 	IndividualDoctor(ctx context.Context, in *Doid, opts ...grpc.CallOption) (*DoctorsDetailr, error)
+	DoctorProfile(ctx context.Context, in *DoId, opts ...grpc.CallOption) (*DoctorsDetailr, error)
 }
 
 type doctorClient struct {
@@ -79,6 +81,15 @@ func (c *doctorClient) IndividualDoctor(ctx context.Context, in *Doid, opts ...g
 	return out, nil
 }
 
+func (c *doctorClient) DoctorProfile(ctx context.Context, in *DoId, opts ...grpc.CallOption) (*DoctorsDetailr, error) {
+	out := new(DoctorsDetailr)
+	err := c.cc.Invoke(ctx, Doctor_DoctorProfile_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DoctorServer is the server API for Doctor service.
 // All implementations must embed UnimplementedDoctorServer
 // for forward compatibility
@@ -87,6 +98,7 @@ type DoctorServer interface {
 	DoctorLogin(context.Context, *DoctorLoginRequest) (*DoctorLoginResponse, error)
 	DoctorsDetail(context.Context, *Doreq) (*DoctorsDetailre, error)
 	IndividualDoctor(context.Context, *Doid) (*DoctorsDetailr, error)
+	DoctorProfile(context.Context, *DoId) (*DoctorsDetailr, error)
 	mustEmbedUnimplementedDoctorServer()
 }
 
@@ -105,6 +117,9 @@ func (UnimplementedDoctorServer) DoctorsDetail(context.Context, *Doreq) (*Doctor
 }
 func (UnimplementedDoctorServer) IndividualDoctor(context.Context, *Doid) (*DoctorsDetailr, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IndividualDoctor not implemented")
+}
+func (UnimplementedDoctorServer) DoctorProfile(context.Context, *DoId) (*DoctorsDetailr, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DoctorProfile not implemented")
 }
 func (UnimplementedDoctorServer) mustEmbedUnimplementedDoctorServer() {}
 
@@ -191,6 +206,24 @@ func _Doctor_IndividualDoctor_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Doctor_DoctorProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DoId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DoctorServer).DoctorProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Doctor_DoctorProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DoctorServer).DoctorProfile(ctx, req.(*DoId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Doctor_ServiceDesc is the grpc.ServiceDesc for Doctor service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +246,10 @@ var Doctor_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IndividualDoctor",
 			Handler:    _Doctor_IndividualDoctor_Handler,
+		},
+		{
+			MethodName: "DoctorProfile",
+			Handler:    _Doctor_DoctorProfile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

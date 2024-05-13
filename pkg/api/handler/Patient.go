@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"healy-apigateway/pkg/api/response"
 	interfaces "healy-apigateway/pkg/client/interface"
@@ -75,4 +76,53 @@ func (p *PatientHandler) PatientDetails(c *fiber.Ctx) error {
 	successRes := response.ClientResponse("patient Details", patientDetails, nil)
 	return c.Status(200).JSON(successRes)
 
+}
+func (p *PatientHandler) UpdatePatientDetails(c *fiber.Ctx) error {
+
+	user_id := c.Locals("user_id").(int)
+
+	var patient models.PatientDetails
+
+	if err := c.BodyParser(&patient); err != nil {
+		errs := response.ClientResponse("details are not in correct format", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errs)
+	}
+
+	updatedDetails, err := p.Grpc_client.UpdatePatientDetails(patient, user_id)
+	if err != nil {
+		errorRes := response.ClientResponse("failed update user", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errorRes)
+	}
+
+	successRes := response.ClientResponse("Updated User Details", updatedDetails, nil)
+	return c.Status(200).JSON(successRes)
+
+}
+
+type contextKey string
+
+const (
+	userIDKey contextKey = "userID"
+)
+
+func (p *PatientHandler) UpdatePassword(c *fiber.Ctx) error {
+	userID := c.Locals("user_id").(int)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, userIDKey, userID)
+	var body models.UpdatePassword
+
+	if err := c.BodyParser(&body); err != nil {
+		errorRes := response.ClientResponse("fields provided are in wrong format", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errorRes)
+	}
+	
+	err := p.Grpc_client.UpdatePassword(ctx,userID, body)
+
+	if err != nil {
+		errorRes := response.ClientResponse("failed updating password", nil, err.Error())
+		return c.Status(http.StatusInternalServerError).JSON(errorRes)
+	}
+
+	successRes := response.ClientResponse("Password updated successfully", nil, nil)
+	return c.Status(http.StatusCreated).JSON(successRes)
 }

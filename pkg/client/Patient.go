@@ -5,8 +5,8 @@ import (
 	"fmt"
 	interfaces "healy-apigateway/pkg/client/interface"
 	"healy-apigateway/pkg/config"
-	models "healy-apigateway/pkg/utils"
 	pb "healy-apigateway/pkg/pb/patient"
+	models "healy-apigateway/pkg/utils"
 
 	"google.golang.org/grpc"
 )
@@ -73,17 +73,52 @@ func (p *patientClient) PatientLogin(patient models.PatientLogin) (models.TokenP
 		RefreshToken: res.RefreshToken,
 	}, nil
 }
-func (p *patientClient) PatientDetails(user_id int)(models.SignupdetailResponse,error) {
-	res,err:=p.Client.IndPatientDetails(context.Background(),&pb.Idreq{UserId: uint64(user_id)})
-	if err!=nil{
-		return models.SignupdetailResponse{},err
+func (p *patientClient) PatientDetails(user_id int) (models.SignupdetailResponse, error) {
+	res, err := p.Client.IndPatientDetails(context.Background(), &pb.Idreq{UserId: uint64(user_id)})
+	if err != nil {
+		return models.SignupdetailResponse{}, err
 	}
-	fmt.Println(res.Id,"resid")
+	fmt.Println(res.Id, "resid")
 	return models.SignupdetailResponse{
-		Id: uint(res.Id),
-		Fullname: res.Fullname,
-		Email: res.Email,
-		Gender: res.Gender,
-	 Contactnumber: res.Contactnumber,	
-	},nil
+		Id:            uint(res.Id),
+		Fullname:      res.Fullname,
+		Email:         res.Email,
+		Gender:        res.Gender,
+		Contactnumber: res.Contactnumber,
+	}, nil
+}
+func (p *patientClient) UpdatePatientDetails(pa models.PatientDetails, patient_id int) (models.PatientDetails, error) {
+	patient := &pb.InPatientDetails{
+		Fullname:      pa.Fullname,
+		Email:         pa.Email,
+		Gender:        pa.Gender,
+		Contactnumber: pa.Contactnumber,
+	}
+	res, err := p.Client.UpdatePatientDetails(context.Background(), &pb.UpdateRequest{
+		PatientId:        uint64(patient_id),
+		InPatientDetails: patient,
+	})
+	if err != nil {
+		return models.PatientDetails{}, err
+	}
+	return models.PatientDetails{
+		Fullname:      res.Fullname,
+		Email:         res.Email,
+		Gender:        res.Gender,
+		Contactnumber: res.Contactnumber,
+	}, nil
+}
+func (p *patientClient) UpdatePassword(ctx context.Context,userId int, body models.UpdatePassword)error {
+
+	res,err:=p.Client.UpdatePassword(context.Background(),&pb.UpdatePasswordRequest{
+		PatientId: uint64(userId),
+		OldPassword: body.OldPassword,
+		NewPassword: body.NewPassword,
+		ConfirmNewPassword: body.ConfirmNewPassword,
+	})
+	if err!=nil{
+		return err
+	}
+	fmt.Println(res)
+	return nil
 }

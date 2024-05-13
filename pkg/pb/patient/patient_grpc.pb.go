@@ -19,9 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Patient_PatientSignUp_FullMethodName     = "/patient.Patient/PatientSignUp"
-	Patient_PatientLogin_FullMethodName      = "/patient.Patient/PatientLogin"
-	Patient_IndPatientDetails_FullMethodName = "/patient.Patient/IndPatientDetails"
+	Patient_PatientSignUp_FullMethodName        = "/patient.Patient/PatientSignUp"
+	Patient_PatientLogin_FullMethodName         = "/patient.Patient/PatientLogin"
+	Patient_IndPatientDetails_FullMethodName    = "/patient.Patient/IndPatientDetails"
+	Patient_UpdatePatientDetails_FullMethodName = "/patient.Patient/UpdatePatientDetails"
+	Patient_UpdatePassword_FullMethodName       = "/patient.Patient/UpdatePassword"
 )
 
 // PatientClient is the client API for Patient service.
@@ -31,6 +33,8 @@ type PatientClient interface {
 	PatientSignUp(ctx context.Context, in *PatientSignUpRequest, opts ...grpc.CallOption) (*PatientSignUpResponse, error)
 	PatientLogin(ctx context.Context, in *PatientLoginRequest, opts ...grpc.CallOption) (*PatientLoginResponse, error)
 	IndPatientDetails(ctx context.Context, in *Idreq, opts ...grpc.CallOption) (*PatientDetails, error)
+	UpdatePatientDetails(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*InPatientDetails, error)
+	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error)
 }
 
 type patientClient struct {
@@ -68,6 +72,24 @@ func (c *patientClient) IndPatientDetails(ctx context.Context, in *Idreq, opts .
 	return out, nil
 }
 
+func (c *patientClient) UpdatePatientDetails(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*InPatientDetails, error) {
+	out := new(InPatientDetails)
+	err := c.cc.Invoke(ctx, Patient_UpdatePatientDetails_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *patientClient) UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error) {
+	out := new(UpdatePasswordResponse)
+	err := c.cc.Invoke(ctx, Patient_UpdatePassword_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PatientServer is the server API for Patient service.
 // All implementations must embed UnimplementedPatientServer
 // for forward compatibility
@@ -75,6 +97,8 @@ type PatientServer interface {
 	PatientSignUp(context.Context, *PatientSignUpRequest) (*PatientSignUpResponse, error)
 	PatientLogin(context.Context, *PatientLoginRequest) (*PatientLoginResponse, error)
 	IndPatientDetails(context.Context, *Idreq) (*PatientDetails, error)
+	UpdatePatientDetails(context.Context, *UpdateRequest) (*InPatientDetails, error)
+	UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error)
 	mustEmbedUnimplementedPatientServer()
 }
 
@@ -90,6 +114,12 @@ func (UnimplementedPatientServer) PatientLogin(context.Context, *PatientLoginReq
 }
 func (UnimplementedPatientServer) IndPatientDetails(context.Context, *Idreq) (*PatientDetails, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IndPatientDetails not implemented")
+}
+func (UnimplementedPatientServer) UpdatePatientDetails(context.Context, *UpdateRequest) (*InPatientDetails, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePatientDetails not implemented")
+}
+func (UnimplementedPatientServer) UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
 }
 func (UnimplementedPatientServer) mustEmbedUnimplementedPatientServer() {}
 
@@ -158,6 +188,42 @@ func _Patient_IndPatientDetails_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Patient_UpdatePatientDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PatientServer).UpdatePatientDetails(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Patient_UpdatePatientDetails_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PatientServer).UpdatePatientDetails(ctx, req.(*UpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Patient_UpdatePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PatientServer).UpdatePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Patient_UpdatePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PatientServer).UpdatePassword(ctx, req.(*UpdatePasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Patient_ServiceDesc is the grpc.ServiceDesc for Patient service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +242,14 @@ var Patient_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IndPatientDetails",
 			Handler:    _Patient_IndPatientDetails_Handler,
+		},
+		{
+			MethodName: "UpdatePatientDetails",
+			Handler:    _Patient_UpdatePatientDetails_Handler,
+		},
+		{
+			MethodName: "UpdatePassword",
+			Handler:    _Patient_UpdatePassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

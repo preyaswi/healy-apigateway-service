@@ -118,3 +118,18 @@ func (d *doctorClient)IndividualDoctor(doctorId string)(models.IndDoctorDetail,e
 		Rating: doctor.Rating,
 	},nil
 }
+func (d *doctorClient)DoctorProfile(id int)(models.IndDoctorDetail,error)  {
+	res,err:=d.Client.DoctorProfile(context.Background(),&pb.DoId{Id: uint64(id)})
+	if err!=nil{
+		return models.IndDoctorDetail{},err
+	}
+	return models.IndDoctorDetail{
+		Id: uint(id),
+		FullName: res.FullName,
+		Email: res.Email,
+		PhoneNumber: res.PhoneNumber,
+		Specialization: res.Specialization,
+		YearsOfExperience: res.YearsOfExperience,
+		LicenseNumber: res.LicenseNumber,
+	},nil
+}

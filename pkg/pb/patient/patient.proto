@@ -6,6 +6,8 @@ service Patient{
 	rpc PatientSignUp(PatientSignUpRequest) returns (PatientSignUpResponse) {};
 	rpc PatientLogin(PatientLoginRequest)returns (PatientLoginResponse){};
 	rpc IndPatientDetails(idreq)returns(PatientDetails){};
+	rpc UpdatePatientDetails(UpdateRequest)returns(InPatientDetails){};
+	rpc UpdatePassword(UpdatePasswordRequest)returns(UpdatePasswordResponse){};
 }
 message PatientSignUpRequest{
 	string fullname=1;
@@ -39,3 +41,20 @@ message PatientLoginResponse{
 message idreq{
 	uint64 user_id=1;
 }
+message InPatientDetails{
+	string fullname=1;
+    string email=2;
+	string gender=3;
+    string contactnumber=4;
+}
+message UpdateRequest{
+	uint64 patient_id=1;
+	InPatientDetails InPatientDetails=2;
+}
+message UpdatePasswordRequest {
+	uint64 patient_id=1;
+    string old_password =2;
+    string new_password = 3;
+    string confirm_new_password = 4;
+}
+message UpdatePasswordResponse{}
