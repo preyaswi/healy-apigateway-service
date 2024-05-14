@@ -18,7 +18,7 @@ func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler
 	route.Use(logger.New())
 	DoctorRoutes(route,doctorHandler)
 	PatientRoutes(route,patientHandler,doctorHandler)
-	AdminRoutes(route,adminHandler)
+	AdminRoutes(route,adminHandler,patientHandler,doctorHandler)
 
 	
 	// patient.Use(middleware.UserAuthMiddleware())

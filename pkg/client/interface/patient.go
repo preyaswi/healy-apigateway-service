@@ -11,4 +11,5 @@ type PatientClient interface {
 	PatientDetails(user_id int) (models.SignupdetailResponse, error)
 	UpdatePatientDetails(patient models.PatientDetails, patient_id int) (models.PatientDetails,error)
 	UpdatePassword(ctx context.Context,userid int,body models.UpdatePassword)error
+	ListPatients()([]models.SignupdetailResponse,error)
 }

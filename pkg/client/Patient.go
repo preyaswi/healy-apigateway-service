@@ -108,17 +108,35 @@ func (p *patientClient) UpdatePatientDetails(pa models.PatientDetails, patient_i
 		Contactnumber: res.Contactnumber,
 	}, nil
 }
-func (p *patientClient) UpdatePassword(ctx context.Context,userId int, body models.UpdatePassword)error {
+func (p *patientClient) UpdatePassword(ctx context.Context, userId int, body models.UpdatePassword) error {
 
-	res,err:=p.Client.UpdatePassword(context.Background(),&pb.UpdatePasswordRequest{
-		PatientId: uint64(userId),
-		OldPassword: body.OldPassword,
-		NewPassword: body.NewPassword,
+	res, err := p.Client.UpdatePassword(context.Background(), &pb.UpdatePasswordRequest{
+		PatientId:          uint64(userId),
+		OldPassword:        body.OldPassword,
+		NewPassword:        body.NewPassword,
 		ConfirmNewPassword: body.ConfirmNewPassword,
 	})
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 	fmt.Println(res)
 	return nil
+}
+func (p *patientClient) ListPatients() ([]models.SignupdetailResponse, error) {
+	res, err := p.Client.ListPatients(context.Background(), &pb.Req{})
+	if err != nil {
+		return []models.SignupdetailResponse{}, err
+	}
+	patientslist := make([]models.SignupdetailResponse, len(res.Pa))
+	for i, patient := range res.Pa {
+		patientdetail := models.SignupdetailResponse{
+			Id:            uint(patient.Id),
+			Fullname:      patient.Fullname,
+			Email:         patient.Email,
+			Gender:        patient.Gender,
+			Contactnumber: patient.Contactnumber,
+		}
+		patientslist[i] = patientdetail
+	}
+	return patientslist, nil
 }

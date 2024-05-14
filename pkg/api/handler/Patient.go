@@ -115,8 +115,8 @@ func (p *PatientHandler) UpdatePassword(c *fiber.Ctx) error {
 		errorRes := response.ClientResponse("fields provided are in wrong format", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errorRes)
 	}
-	
-	err := p.Grpc_client.UpdatePassword(ctx,userID, body)
+
+	err := p.Grpc_client.UpdatePassword(ctx, userID, body)
 
 	if err != nil {
 		errorRes := response.ClientResponse("failed updating password", nil, err.Error())
@@ -125,4 +125,13 @@ func (p *PatientHandler) UpdatePassword(c *fiber.Ctx) error {
 
 	successRes := response.ClientResponse("Password updated successfully", nil, nil)
 	return c.Status(http.StatusCreated).JSON(successRes)
+}
+func (p *PatientHandler) ListPatients(c *fiber.Ctx) error {
+	listedPatients, err := p.Grpc_client.ListPatients()
+	if err != nil {
+		errorRes := response.ClientResponse("failed retreiving list of patients", nil, err.Error())
+		return c.Status(http.StatusInternalServerError).JSON(errorRes)
+	}
+	successRes := response.ClientResponse("retrived list of patients", listedPatients, nil)
+	return c.Status(200).JSON(successRes)
 }
