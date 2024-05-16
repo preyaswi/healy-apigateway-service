@@ -23,5 +23,9 @@ func AdminRoutes(route *fiber.App, adminHandler *handler.AdminHandler,patientHan
 			doctor.Get("",doctorHandler.DoctorsDetails)
 		}
 	}
-
+//paypal -merchat
+//multiparti
+//history-of the schedule
+//chat-kafka 
+//chat-not
 }

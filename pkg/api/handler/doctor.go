@@ -112,3 +112,24 @@ func (d *DoctorHandler) RateDoctor(c *fiber.Ctx) error {
 	return c.Status(202).JSON(successRes)
 
 }
+func (d *DoctorHandler) UpdateDoctorProfile(c *fiber.Ctx) error {
+	doctorid := c.Locals("user_id").(int)
+	var doctor models.DoctorDetails
+
+	if err := c.BodyParser(&doctor); err != nil {
+		errs := response.ClientResponse("details are not in correct format", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errs)
+	}
+	if err := validator.New().Struct(doctor); err != nil {
+		errs := response.ClientResponse("Constraints not satisfied", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errs)
+	}
+	res, err := d.Grpc_Client.UpdateDoctorProfile(doctorid, doctor)
+
+	if err != nil {
+		errorRes := response.ClientResponse("failed update doctor", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errorRes)
+	}
+	successRes := response.ClientResponse("Updated doctor Details", res, nil)
+	return c.Status(200).JSON(successRes)
+}

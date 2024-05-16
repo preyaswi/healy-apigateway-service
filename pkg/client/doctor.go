@@ -146,3 +146,26 @@ func (d *doctorClient)RateDoctor(patientid int,doctorid string,rate models.Rate)
 		Rate: uint(rated.Rate),
 	},nil
 }
+func (d *doctorClient)UpdateDoctorProfile(doctorid int,body models.DoctorDetails) (models.DoctorDetails,error) {
+	res,err:=d.Client.UpdateDoctorProifle(context.Background(),&pb.UpdateReq{
+		Id: uint64(doctorid),
+		Body: &pb.UpdateDoctor{
+			FullName: body.FullName,
+			Email: body.Email,
+			PhoneNumber: body.PhoneNumber,
+			Specialization: body.Specialization,
+			YearsOfExperience: body.YearsOfExperience,
+		},
+	})
+	if err!=nil{
+		return models.DoctorDetails{},err
+	}
+	return models.DoctorDetails{
+		FullName: res.FullName,
+		Email: res.Email,
+		PhoneNumber: body.PhoneNumber,
+		Specialization: body.Specialization,
+		YearsOfExperience: body.YearsOfExperience,
+	},nil
+
+}

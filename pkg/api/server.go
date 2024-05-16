@@ -19,13 +19,6 @@ func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler
 	DoctorRoutes(route,doctorHandler)
 	PatientRoutes(route,patientHandler,doctorHandler)
 	AdminRoutes(route,adminHandler,patientHandler,doctorHandler)
-
-	
-	// patient.Use(middleware.UserAuthMiddleware())
-	// {
-	// 	patient.Get("/doctor",)
-	// }
-
 	return &ServerHTTP{
 		engine: route,
 	}

@@ -19,12 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Doctor_DoctorSignUp_FullMethodName     = "/doctor.Doctor/DoctorSignUp"
-	Doctor_DoctorLogin_FullMethodName      = "/doctor.Doctor/DoctorLogin"
-	Doctor_DoctorsDetail_FullMethodName    = "/doctor.Doctor/DoctorsDetail"
-	Doctor_IndividualDoctor_FullMethodName = "/doctor.Doctor/IndividualDoctor"
-	Doctor_DoctorProfile_FullMethodName    = "/doctor.Doctor/DoctorProfile"
-	Doctor_RateDoctor_FullMethodName       = "/doctor.Doctor/RateDoctor"
+	Doctor_DoctorSignUp_FullMethodName        = "/doctor.Doctor/DoctorSignUp"
+	Doctor_DoctorLogin_FullMethodName         = "/doctor.Doctor/DoctorLogin"
+	Doctor_DoctorsDetail_FullMethodName       = "/doctor.Doctor/DoctorsDetail"
+	Doctor_IndividualDoctor_FullMethodName    = "/doctor.Doctor/IndividualDoctor"
+	Doctor_DoctorProfile_FullMethodName       = "/doctor.Doctor/DoctorProfile"
+	Doctor_UpdateDoctorProifle_FullMethodName = "/doctor.Doctor/UpdateDoctorProifle"
+	Doctor_RateDoctor_FullMethodName          = "/doctor.Doctor/RateDoctor"
 )
 
 // DoctorClient is the client API for Doctor service.
@@ -36,6 +37,7 @@ type DoctorClient interface {
 	DoctorsDetail(ctx context.Context, in *Doreq, opts ...grpc.CallOption) (*DoctorsDetailre, error)
 	IndividualDoctor(ctx context.Context, in *Doid, opts ...grpc.CallOption) (*DoctorsDetailr, error)
 	DoctorProfile(ctx context.Context, in *DoId, opts ...grpc.CallOption) (*DoctorsDetailr, error)
+	UpdateDoctorProifle(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UpdateDoctor, error)
 	RateDoctor(ctx context.Context, in *RateDoctorReq, opts ...grpc.CallOption) (*Rate, error)
 }
 
@@ -92,6 +94,15 @@ func (c *doctorClient) DoctorProfile(ctx context.Context, in *DoId, opts ...grpc
 	return out, nil
 }
 
+func (c *doctorClient) UpdateDoctorProifle(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UpdateDoctor, error) {
+	out := new(UpdateDoctor)
+	err := c.cc.Invoke(ctx, Doctor_UpdateDoctorProifle_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *doctorClient) RateDoctor(ctx context.Context, in *RateDoctorReq, opts ...grpc.CallOption) (*Rate, error) {
 	out := new(Rate)
 	err := c.cc.Invoke(ctx, Doctor_RateDoctor_FullMethodName, in, out, opts...)
@@ -110,6 +121,7 @@ type DoctorServer interface {
 	DoctorsDetail(context.Context, *Doreq) (*DoctorsDetailre, error)
 	IndividualDoctor(context.Context, *Doid) (*DoctorsDetailr, error)
 	DoctorProfile(context.Context, *DoId) (*DoctorsDetailr, error)
+	UpdateDoctorProifle(context.Context, *UpdateReq) (*UpdateDoctor, error)
 	RateDoctor(context.Context, *RateDoctorReq) (*Rate, error)
 	mustEmbedUnimplementedDoctorServer()
 }
@@ -132,6 +144,9 @@ func (UnimplementedDoctorServer) IndividualDoctor(context.Context, *Doid) (*Doct
 }
 func (UnimplementedDoctorServer) DoctorProfile(context.Context, *DoId) (*DoctorsDetailr, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DoctorProfile not implemented")
+}
+func (UnimplementedDoctorServer) UpdateDoctorProifle(context.Context, *UpdateReq) (*UpdateDoctor, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDoctorProifle not implemented")
 }
 func (UnimplementedDoctorServer) RateDoctor(context.Context, *RateDoctorReq) (*Rate, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RateDoctor not implemented")
@@ -239,6 +254,24 @@ func _Doctor_DoctorProfile_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Doctor_UpdateDoctorProifle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DoctorServer).UpdateDoctorProifle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Doctor_UpdateDoctorProifle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DoctorServer).UpdateDoctorProifle(ctx, req.(*UpdateReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Doctor_RateDoctor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RateDoctorReq)
 	if err := dec(in); err != nil {
@@ -283,6 +316,10 @@ var Doctor_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DoctorProfile",
 			Handler:    _Doctor_DoctorProfile_Handler,
+		},
+		{
+			MethodName: "UpdateDoctorProifle",
+			Handler:    _Doctor_UpdateDoctorProifle_Handler,
 		},
 		{
 			MethodName: "RateDoctor",

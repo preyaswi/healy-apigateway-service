@@ -15,6 +15,7 @@ func DoctorRoutes(route *fiber.App, doctorHandler *handler.DoctorHandler) {
 	{
 		profile:=doctor.Group("/profile")
 		profile.Get("",doctorHandler.DoctorProfile)
+		profile.Put("",doctorHandler.UpdateDoctorProfile)
 
 	}
 

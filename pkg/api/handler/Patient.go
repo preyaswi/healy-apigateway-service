@@ -87,7 +87,10 @@ func (p *PatientHandler) UpdatePatientDetails(c *fiber.Ctx) error {
 		errs := response.ClientResponse("details are not in correct format", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
 	}
-
+	if err := validator.New().Struct(patient); err != nil {
+		errs := response.ClientResponse("Constraints not satisfied", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errs)
+	}
 	updatedDetails, err := p.Grpc_client.UpdatePatientDetails(patient, user_id)
 	if err != nil {
 		errorRes := response.ClientResponse("failed update user", nil, err.Error())
