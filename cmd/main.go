@@ -11,8 +11,8 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot load api gateway config", err)
 	}
+	
 	server, diErr := di.InitializeApi(cfg)
-
 	if diErr != nil {
 		log.Fatal("cannot start server: ", diErr)
 	} else {

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/template/html/v2"
 )
 
 type ServerHTTP struct {
@@ -14,10 +15,13 @@ type ServerHTTP struct {
 }
 
 func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler.DoctorHandler,adminHandler *handler.AdminHandler) *ServerHTTP {
-	route := fiber.New()
+	engine := html.New("./template", ".html")
+	route := fiber.New(fiber.Config{
+		Views: engine,
+	})
 	route.Use(logger.New())
 	DoctorRoutes(route,doctorHandler)
-	PatientRoutes(route,patientHandler,doctorHandler)
+	PatientRoutes(route,patientHandler,doctorHandler,adminHandler)
 	AdminRoutes(route,adminHandler,patientHandler,doctorHandler)
 	return &ServerHTTP{
 		engine: route,

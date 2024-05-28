@@ -28,3 +28,12 @@ type TokenAdmin struct {
 	Admin AdminDetailsResponse
 	Token string
 }
+
+type Payment struct{
+	PaymentId uint
+	PatientId uint
+	DoctorId uint 
+	DoctorName string 
+	Fees uint64
+	PaymentStatus string
+}

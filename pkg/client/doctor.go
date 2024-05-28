@@ -78,94 +78,106 @@ func (d *doctorClient) DoctorLogin(login models.DoctorLogin) (models.DoctorSignU
 	}, nil
 
 }
-func (d *doctorClient)DoctorsDetails() ([]models.DoctorsDetails,error) {
-	response,err:=d.Client.DoctorsDetail(context.Background(),&pb.Doreq{})
-	if err!=nil{
-		return []models.DoctorsDetails{},err
+func (d *doctorClient) DoctorsDetails() ([]models.DoctorsDetails, error) {
+	response, err := d.Client.DoctorsDetail(context.Background(), &pb.Doreq{})
+	if err != nil {
+		return []models.DoctorsDetails{}, err
 	}
 	doctorsDetails := make([]models.DoctorsDetails, len(response.DoctorsDetailr))
-    for i, detail := range response.DoctorsDetailr {
-        doctorDetail := models.DoctorDetail{
-            Id:                uint(detail.Id),
-            FullName:          detail.FullName,
-            Email:             detail.Email,
-            PhoneNumber:       detail.PhoneNumber,
-            Specialization:    detail.Specialization,
-            YearsOfExperience: detail.YearsOfExperience,
-            LicenseNumber:     detail.LicenseNumber,
-        }
-        doctorsDetails[i] = models.DoctorsDetails{
-            DoctorDetail: doctorDetail,
-            Rating:       detail.Rating,
-        }
-    }
+	for i, detail := range response.DoctorsDetailr {
+		doctorDetail := models.DoctorDetail{
+			Id:                uint(detail.Id),
+			FullName:          detail.FullName,
+			Email:             detail.Email,
+			PhoneNumber:       detail.PhoneNumber,
+			Specialization:    detail.Specialization,
+			YearsOfExperience: detail.YearsOfExperience,
+			LicenseNumber:     detail.LicenseNumber,
+		}
+		doctorsDetails[i] = models.DoctorsDetails{
+			DoctorDetail: doctorDetail,
+			Rating:       detail.Rating,
+		}
+	}
 
-    return doctorsDetails, nil
+	return doctorsDetails, nil
 }
-func (d *doctorClient)IndividualDoctor(doctorId string)(models.IndDoctorDetail,error)  {
-	doctor,err:=d.Client.IndividualDoctor(context.Background(),&pb.Doid{DoctorId: doctorId})
-	if err!=nil{
-		return models.IndDoctorDetail{},err
+func (d *doctorClient) IndividualDoctor(doctorId string) (models.IndDoctorDetail, error) {
+	doctor, err := d.Client.IndividualDoctor(context.Background(), &pb.Doid{DoctorId: doctorId})
+	if err != nil {
+		return models.IndDoctorDetail{}, err
 	}
 	return models.IndDoctorDetail{
-		Id: uint(doctor.Id),
-		FullName: doctor.FullName,
-		Email: doctor.Email,
-		PhoneNumber: doctor.PhoneNumber,
-		Specialization: doctor.Specialization,
+		Id:                uint(doctor.Id),
+		FullName:          doctor.FullName,
+		Email:             doctor.Email,
+		PhoneNumber:       doctor.PhoneNumber,
+		Specialization:    doctor.Specialization,
 		YearsOfExperience: doctor.YearsOfExperience,
-		LicenseNumber: doctor.LicenseNumber,
-		Rating: doctor.Rating,
-	},nil
+		LicenseNumber:     doctor.LicenseNumber,
+		Rating:            doctor.Rating,
+	}, nil
 }
-func (d *doctorClient)DoctorProfile(id int)(models.IndDoctorDetail,error)  {
-	res,err:=d.Client.DoctorProfile(context.Background(),&pb.DoId{Id: uint64(id)})
-	if err!=nil{
-		return models.IndDoctorDetail{},err
+func (d *doctorClient) DoctorProfile(id int) (models.IndDoctorDetail, error) {
+	res, err := d.Client.DoctorProfile(context.Background(), &pb.DoId{Id: uint64(id)})
+	if err != nil {
+		return models.IndDoctorDetail{}, err
 	}
 	return models.IndDoctorDetail{
-		Id: uint(id),
-		FullName: res.FullName,
-		Email: res.Email,
-		PhoneNumber: res.PhoneNumber,
-		Specialization: res.Specialization,
+		Id:                uint(id),
+		FullName:          res.FullName,
+		Email:             res.Email,
+		PhoneNumber:       res.PhoneNumber,
+		Specialization:    res.Specialization,
 		YearsOfExperience: res.YearsOfExperience,
-		LicenseNumber: res.LicenseNumber,
-	},nil
+		LicenseNumber:     res.LicenseNumber,
+	}, nil
 }
-func (d *doctorClient)RateDoctor(patientid int,doctorid string,rate models.Rate)(models.Rate,error)  {
-	rated,err:=d.Client.RateDoctor(context.Background(),&pb.RateDoctorReq{
+func (d *doctorClient) RateDoctor(patientid int, doctorid string, rate models.Rate) (models.Rate, error) {
+	rated, err := d.Client.RateDoctor(context.Background(), &pb.RateDoctorReq{
 		Patientid: uint64(patientid),
-		DoctorId: doctorid,
-		Rate: &pb.Rate{Rate: uint32(rate.Rate)},
+		DoctorId:  doctorid,
+		Rate:      &pb.Rate{Rate: uint32(rate.Rate)},
 	})
-	if err!=nil{
-		return models.Rate{},err
+	if err != nil {
+		return models.Rate{}, err
 	}
 	return models.Rate{
 		Rate: uint(rated.Rate),
-	},nil
+	}, nil
 }
-func (d *doctorClient)UpdateDoctorProfile(doctorid int,body models.DoctorDetails) (models.DoctorDetails,error) {
-	res,err:=d.Client.UpdateDoctorProifle(context.Background(),&pb.UpdateReq{
+func (d *doctorClient) UpdateDoctorProfile(doctorid int, body models.DoctorDetails) (models.DoctorDetails, error) {
+	res, err := d.Client.UpdateDoctorProifle(context.Background(), &pb.UpdateReq{
 		Id: uint64(doctorid),
 		Body: &pb.UpdateDoctor{
-			FullName: body.FullName,
-			Email: body.Email,
-			PhoneNumber: body.PhoneNumber,
-			Specialization: body.Specialization,
+			FullName:          body.FullName,
+			Email:             body.Email,
+			PhoneNumber:       body.PhoneNumber,
+			Specialization:    body.Specialization,
 			YearsOfExperience: body.YearsOfExperience,
 		},
 	})
-	if err!=nil{
-		return models.DoctorDetails{},err
+	if err != nil {
+		return models.DoctorDetails{}, err
 	}
 	return models.DoctorDetails{
-		FullName: res.FullName,
-		Email: res.Email,
-		PhoneNumber: body.PhoneNumber,
-		Specialization: body.Specialization,
+		FullName:          res.FullName,
+		Email:             res.Email,
+		PhoneNumber:       body.PhoneNumber,
+		Specialization:    body.Specialization,
 		YearsOfExperience: body.YearsOfExperience,
-	},nil
+	}, nil
 
+}
+func (d *doctorClient) DoctorDetailforPayment(doctorid int) (models.DoctorPaymentDetail, error) {
+	res, err := d.Client.DoctorDetailforPayment(context.Background(), &pb.DoId{Id: uint64(doctorid)})
+	if err != nil {
+		
+		return models.DoctorPaymentDetail{}, err
+	}
+	return models.DoctorPaymentDetail{
+		Doctor_id:  int(res.DoctorId),
+		DoctorName: res.DoctorName,
+		Fees:res.Fees ,
+	}, nil
 }
