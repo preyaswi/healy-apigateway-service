@@ -43,3 +43,19 @@ func (pa *PaymentHandler) MakePaymentRazorpay(c *fiber.Ctx) error {
 	})
 
 }
+func (pa *PaymentHandler) VerifyPayment(c *fiber.Ctx)error  {
+	bookingId,err:=strconv.Atoi(c.Query("booking_id"))
+	if err!=nil{
+		errs := response.ClientResponse("cannot convert id string to int", nil, err.Error())
+		return c.Status(http.StatusInternalServerError).JSON(errs)
+	}
+
+	err=pa.Grpc_Client.VerifyPayment(bookingId)
+	if err!=nil{
+		errs := response.ClientResponse("couldn't update payment Details", nil, err.Error())
+		return c.Status(http.StatusInternalServerError).JSON(errs)
+	}
+
+	success := response.ClientResponse("Successfully updated payment details", nil, nil)
+	return c.Status(http.StatusOK).JSON(success)
+}

@@ -5,7 +5,6 @@ import (
 	interfaces "healy-apigateway/pkg/client/interface"
 	models "healy-apigateway/pkg/utils"
 	"net/http"
-	"strconv"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
@@ -62,20 +61,3 @@ func (ad *AdminHandler) AdminSignUp(c *fiber.Ctx) error {
 }
 
 
-func (ad *AdminHandler) VerifyPayment(c *fiber.Ctx)error  {
-	payment_id:=c.Params("payment_id")
-	paymentId,err:=strconv.Atoi(payment_id)
-	if err!=nil{
-		errs := response.ClientResponse("cannot convert id string to int", nil, err.Error())
-		return c.Status(http.StatusInternalServerError).JSON(errs)
-	}
-
-	err=ad.GRPC_Client.VerifyPayment(paymentId)
-	if err!=nil{
-		errs := response.ClientResponse("couldn't update payment Details", nil, err.Error())
-		return c.Status(http.StatusInternalServerError).JSON(errs)
-	}
-
-	success := response.ClientResponse("Successfully updated payment details", nil, nil)
-	return c.Status(http.StatusOK).JSON(success)
-}

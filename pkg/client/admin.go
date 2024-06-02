@@ -105,8 +105,8 @@ func (ad *adminClient)MakePaymentRazorpay(bookingid int) (models.CombinedBooking
 	return paymentdetail,razor_id,nil
 
 }
-func (ad *adminClient)VerifyPayment(payment_id int) error {
-	_,err:=ad.Client.VerifyPayment(context.Background(),&pb.Verifyreq{PaymentId: uint32(payment_id)})
+func (ad *adminClient)VerifyPayment(booking_id int) error {
+	_,err:=ad.Client.VerifyPayment(context.Background(),&pb.PaymentReq{BookingId: uint32(booking_id)})
 	if err!=nil{
 		return err
 	}

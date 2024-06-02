@@ -9,6 +9,6 @@ type AdminClient interface {
 	AddToBookings(patientid,doctorid int)error
 	CancelBookings(patientid,bookingid int)error
 	MakePaymentRazorpay(bookingid int) (models.CombinedBookingDetails, string, error)
-	VerifyPayment(payment_id int)error
+	VerifyPayment(booking_id int)error
 
 }

@@ -12,7 +12,7 @@ func PatientRoutes(route *fiber.App, patientHandler *handler.PatientHandler, doc
 	patient.Post("/signup", patientHandler.PatientSignup)
 	patient.Post("/login", patientHandler.PatientLogin)
 	patient.Get("/payment", paymentHandler.MakePaymentRazorpay)
-	patient.Get("/verifypayment/:payment_id",adminHandler.VerifyPayment)
+	patient.Get("/verifypayment",paymentHandler.VerifyPayment)
 
 	patient.Use(middleware.UserAuthMiddleware())
 	{

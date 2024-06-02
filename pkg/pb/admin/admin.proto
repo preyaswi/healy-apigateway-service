@@ -12,7 +12,7 @@ service Admin{
     rpc AddTobookings(bookingreq)returns(bookingres){};
     rpc CancelBookings(canbookingreq)returns(bookingres){};
     rpc MakePaymentRazorpay(paymentReq)returns (paymentRes){};
-    rpc VerifyPayment(verifyreq)returns(verifyres) {};
+    rpc VerifyPayment(paymentReq)returns(verifyres) {};
 
 }
 message AdminSignupRequest{
@@ -71,7 +71,5 @@ message paymentRes {
   PaymentDetails payment_details = 1;
   string razorid = 2;
 }
-message verifyreq{
-    uint32 payment_id=1;
-}
+
 message verifyres{}
