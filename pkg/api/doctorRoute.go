@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func DoctorRoutes(route *fiber.App, doctorHandler *handler.DoctorHandler) {
+func DoctorRoutes(route *fiber.App, doctorHandler *handler.DoctorHandler,patientHandler *handler.PatientHandler) {
 	doctor := route.Group("/doctor")
 	doctor.Post("/signup",doctorHandler.DoctorSignUp)
 	doctor.Post("/login",doctorHandler.DoctorLogin)
@@ -18,5 +18,7 @@ func DoctorRoutes(route *fiber.App, doctorHandler *handler.DoctorHandler) {
 		profile.Put("",doctorHandler.UpdateDoctorProfile)
 
 	}
+	patient:=doctor.Group("/patient")
+	patient.Post("/prescription/:patient_id",patientHandler.CreatePrescription)
 
 }

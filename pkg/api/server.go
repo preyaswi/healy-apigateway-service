@@ -14,14 +14,14 @@ type ServerHTTP struct {
 	engine *fiber.App
 }
 
-func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler.DoctorHandler,adminHandler *handler.AdminHandler) *ServerHTTP {
+func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler.DoctorHandler,adminHandler *handler.AdminHandler,bookingHandler *handler.BookingHandler,paymentHandler *handler.PaymentHandler) *ServerHTTP {
 	engine := html.New("./template", ".html")
 	route := fiber.New(fiber.Config{
 		Views: engine,
 	})
 	route.Use(logger.New())
-	DoctorRoutes(route,doctorHandler)
-	PatientRoutes(route,patientHandler,doctorHandler,adminHandler)
+	DoctorRoutes(route,doctorHandler,patientHandler)
+	PatientRoutes(route,patientHandler,doctorHandler,adminHandler,bookingHandler,paymentHandler)
 	AdminRoutes(route,adminHandler,patientHandler,doctorHandler)
 	return &ServerHTTP{
 		engine: route,

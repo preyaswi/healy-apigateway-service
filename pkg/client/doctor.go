@@ -169,15 +169,4 @@ func (d *doctorClient) UpdateDoctorProfile(doctorid int, body models.DoctorDetai
 	}, nil
 
 }
-func (d *doctorClient) DoctorDetailforPayment(doctorid int) (models.DoctorPaymentDetail, error) {
-	res, err := d.Client.DoctorDetailforPayment(context.Background(), &pb.DoId{Id: uint64(doctorid)})
-	if err != nil {
-		
-		return models.DoctorPaymentDetail{}, err
-	}
-	return models.DoctorPaymentDetail{
-		Doctor_id:  int(res.DoctorId),
-		DoctorName: res.DoctorName,
-		Fees:res.Fees ,
-	}, nil
-}
+

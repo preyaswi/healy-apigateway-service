@@ -70,21 +70,34 @@ func (ad *adminClient) AdminLogin(adminDetails models.AdminLogin) (models.TokenA
 		Token: admin.Token,
 	}, nil
 }
-func (ad *adminClient)MakePaymentRazorpay(patient_id int,doctordetails models.DoctorPaymentDetail) (models.Payment, string, error){
-	res, err := ad.Client.MakePaymentRazorpay(context.Background(), &pb.PaymentReq{
-		PatientId: uint32(patient_id),
-		DoctorId:  uint32(doctordetails.Doctor_id),
-		DoctorName: doctordetails.DoctorName,
-		Fees: doctordetails.Fees,
+func (ad *adminClient)AddToBookings(patientid,doctorid int)error  {
+	_,err:=ad.Client.AddTobookings(context.Background(),&pb.Bookingreq{
+		PatientId: int32(patientid),
+		DoctorId: int32(doctorid),
 	})
-	if err != nil {
-		return models.Payment{}, "", err
+	if err!=nil{
+		return err
 	}
-	paymentdetail:=models.Payment{
-		PaymentId: uint(res.PaymentDetails.PaymentId),
+	return nil
+}
+func (ad *adminClient)CancelBookings(patientid,bookingid int)error {
+	_,err:=ad.Client.CancelBookings(context.Background(),&pb.Canbookingreq{PatientId: int32(patientid),BookingId: int32(bookingid)})
+	if err!=nil{
+		return err
+	}
+	return nil
+}
+func (ad *adminClient)MakePaymentRazorpay(bookingid int) (models.CombinedBookingDetails, string, error){
+	res, err := ad.Client.MakePaymentRazorpay(context.Background(),&pb.PaymentReq{BookingId: uint32(bookingid)})
+	if err != nil {
+		return models.CombinedBookingDetails{}, "", err
+	}
+	paymentdetail:=models.CombinedBookingDetails{
+		BookingId: uint(res.PaymentDetails.BookingId),
 		PatientId: uint(res.PaymentDetails.PatientId),
 		DoctorId: uint(res.PaymentDetails.DoctorId),
 		DoctorName: res.PaymentDetails.DoctorName,
+		DoctorEmail: res.PaymentDetails.DoctorEmail,
 		Fees: res.PaymentDetails.Fees,
 		PaymentStatus: res.PaymentDetails.PaymentStatus,
 	}

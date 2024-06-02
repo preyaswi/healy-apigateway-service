@@ -11,7 +11,6 @@ service Doctor{
     rpc UpdateDoctorProifle(UpdateReq)returns(UpdateDoctor){};
 
     rpc RateDoctor(RateDoctorReq)returns(Rate){};
-    rpc DoctorDetailforPayment(Do_id)returns(DoctorPaymentDetail){};
 
 
 }
@@ -89,9 +88,4 @@ message UpdateDoctor{
 message UpdateReq{
     uint64 id=1;
     UpdateDoctor body =2;
-}
-message DoctorPaymentDetail {
-    int32 Doctor_id  =1;
-   string DoctorName =2;
-    uint64 Fees   =3;
 }

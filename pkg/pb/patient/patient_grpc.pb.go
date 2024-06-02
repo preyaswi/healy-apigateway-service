@@ -25,6 +25,7 @@ const (
 	Patient_UpdatePatientDetails_FullMethodName = "/patient.Patient/UpdatePatientDetails"
 	Patient_UpdatePassword_FullMethodName       = "/patient.Patient/UpdatePassword"
 	Patient_ListPatients_FullMethodName         = "/patient.Patient/ListPatients"
+	Patient_CreatePrescription_FullMethodName   = "/patient.Patient/CreatePrescription"
 )
 
 // PatientClient is the client API for Patient service.
@@ -37,6 +38,7 @@ type PatientClient interface {
 	UpdatePatientDetails(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*InPatientDetails, error)
 	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error)
 	ListPatients(ctx context.Context, in *Req, opts ...grpc.CallOption) (*Listpares, error)
+	CreatePrescription(ctx context.Context, in *PrescReq, opts ...grpc.CallOption) (*PrescReq, error)
 }
 
 type patientClient struct {
@@ -101,6 +103,15 @@ func (c *patientClient) ListPatients(ctx context.Context, in *Req, opts ...grpc.
 	return out, nil
 }
 
+func (c *patientClient) CreatePrescription(ctx context.Context, in *PrescReq, opts ...grpc.CallOption) (*PrescReq, error) {
+	out := new(PrescReq)
+	err := c.cc.Invoke(ctx, Patient_CreatePrescription_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PatientServer is the server API for Patient service.
 // All implementations must embed UnimplementedPatientServer
 // for forward compatibility
@@ -111,6 +122,7 @@ type PatientServer interface {
 	UpdatePatientDetails(context.Context, *UpdateRequest) (*InPatientDetails, error)
 	UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error)
 	ListPatients(context.Context, *Req) (*Listpares, error)
+	CreatePrescription(context.Context, *PrescReq) (*PrescReq, error)
 	mustEmbedUnimplementedPatientServer()
 }
 
@@ -135,6 +147,9 @@ func (UnimplementedPatientServer) UpdatePassword(context.Context, *UpdatePasswor
 }
 func (UnimplementedPatientServer) ListPatients(context.Context, *Req) (*Listpares, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPatients not implemented")
+}
+func (UnimplementedPatientServer) CreatePrescription(context.Context, *PrescReq) (*PrescReq, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePrescription not implemented")
 }
 func (UnimplementedPatientServer) mustEmbedUnimplementedPatientServer() {}
 
@@ -257,6 +272,24 @@ func _Patient_ListPatients_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Patient_CreatePrescription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PrescReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PatientServer).CreatePrescription(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Patient_CreatePrescription_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PatientServer).CreatePrescription(ctx, req.(*PrescReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Patient_ServiceDesc is the grpc.ServiceDesc for Patient service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,6 +320,10 @@ var Patient_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListPatients",
 			Handler:    _Patient_ListPatients_Handler,
+		},
+		{
+			MethodName: "CreatePrescription",
+			Handler:    _Patient_CreatePrescription_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

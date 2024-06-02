@@ -11,6 +11,9 @@ service Patient{
 
     rpc ListPatients(req)returns(listpares){};
 
+    rpc CreatePrescription(PrescReq)returns(PrescReq){};
+
+
 }
 message PatientSignUpRequest{
 	string fullname=1;
@@ -65,3 +68,11 @@ message listpares{
 	repeated PatientDetails pa=1;
 }
 message req{}
+message PrescReq{
+    int32    DoctorID =1;
+    int32 PatientID=2;
+    string DoctorName=3;
+    string Medicine=4;
+    string Dosage=5;
+    string Notes=6;
+}
