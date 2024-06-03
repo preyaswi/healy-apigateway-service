@@ -38,3 +38,10 @@ type UpdatePassword struct{
     NewPassword        string `json:"new_password" binding:"required"`
     ConfirmNewPassword string `json:"confirm_new_password" binding:"required"`
 }
+type Patient struct {
+    Id            uint
+    Fullname      string
+    Email         string
+    Gender        string
+    Contactnumber string
+}

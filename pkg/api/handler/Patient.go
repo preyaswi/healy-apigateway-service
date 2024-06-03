@@ -141,7 +141,7 @@ func (p *PatientHandler) ListPatients(c *fiber.Ctx) error {
 }
 func (p *PatientHandler)CreatePrescription(c *fiber.Ctx)error  {
 	doctor_id:=c.Locals("user_id").(int)
-	patient_id:=c.Params("patient_id")
+	patient_id:=c.Query("patient_id")
 	patientId,err:=strconv.Atoi(patient_id)
 	if err!=nil{
 		errs := response.ClientResponse("cannot convert id string to int", nil, err.Error())
@@ -159,7 +159,6 @@ func (p *PatientHandler)CreatePrescription(c *fiber.Ctx)error  {
 	prescriptionRequest := models.PrescriptionRequest{
         DoctorID:   doctor_id,
         PatientID:  patientId,
-        DoctorName: prescription.DoctorName,
         Medicine:   prescription.Medicine,
         Dosage:     prescription.Dosage,
         Notes:      prescription.Notes,

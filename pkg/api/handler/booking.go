@@ -66,3 +66,13 @@ func (b *BookingHandler)CancelBookings(c *fiber.Ctx)error  {
 
 
 }
+func (b *BookingHandler)GetBookedPatients(c *fiber.Ctx)error  {
+	doctorid:=c.Locals("user_id").(int)
+	patientdetails,err:=b.Grpc_Client.GetPaidPatients(doctorid)
+	if err!=nil{
+		errs := response.ClientResponse("couldn't fetch booked patients, please try again", nil, err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(errs) 
+	}
+	success := response.ClientResponse("Successfully fetched booked patients", patientdetails, nil)
+	return c.Status(fiber.StatusOK).JSON(success)
+}

@@ -13,6 +13,7 @@ service Admin{
     rpc CancelBookings(canbookingreq)returns(bookingres){};
     rpc MakePaymentRazorpay(paymentReq)returns (paymentRes){};
     rpc VerifyPayment(paymentReq)returns(verifyres) {};
+    rpc GetPaidPatients(GetPaidPatientsRequest)returns(GetPaidPatientsResponse){};
 
 }
 message AdminSignupRequest{
@@ -73,3 +74,18 @@ message paymentRes {
 }
 
 message verifyres{}
+
+message GetPaidPatientsRequest {
+  int32 doctor_id = 1;
+}
+message Patient {
+  uint32 id = 1;
+  string fullname = 2;
+  string email = 3;
+  string gender = 4;
+  string contactnumber = 5;
+}
+
+message GetPaidPatientsResponse {
+  repeated Patient patients = 1;
+}

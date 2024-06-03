@@ -144,7 +144,6 @@ func (p *patientClient) CreatePrescription(prescription models.PrescriptionReque
 	res, err := p.Client.CreatePrescription(context.Background(), &pb.PrescReq{
 		DoctorID:   int32(prescription.DoctorID),
 		PatientID:  int32(prescription.PatientID),
-		DoctorName: prescription.DoctorName,
 		Medicine:   prescription.Medicine,
 		Dosage:     prescription.Dosage,
 		Notes:      prescription.Notes,
@@ -155,7 +154,6 @@ func (p *patientClient) CreatePrescription(prescription models.PrescriptionReque
 	return models.PrescriptionRequest{
 		DoctorID:   int(res.DoctorID),
 		PatientID:  int(res.PatientID),
-		DoctorName: res.DoctorName,
 		Medicine:   res.Medicine,
 		Dosage:     res.Dosage,
 		Notes:      res.Notes,

@@ -11,4 +11,6 @@ type AdminClient interface {
 	MakePaymentRazorpay(bookingid int) (models.CombinedBookingDetails, string, error)
 	VerifyPayment(booking_id int)error
 
+	GetPaidPatients(doctor_id int)([]models.Patient,error)
+
 }

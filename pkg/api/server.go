@@ -20,7 +20,7 @@ func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler
 		Views: engine,
 	})
 	route.Use(logger.New())
-	DoctorRoutes(route,doctorHandler,patientHandler)
+	DoctorRoutes(route,doctorHandler,patientHandler,bookingHandler)
 	PatientRoutes(route,patientHandler,doctorHandler,adminHandler,bookingHandler,paymentHandler)
 	AdminRoutes(route,adminHandler,patientHandler,doctorHandler)
 	return &ServerHTTP{
