@@ -140,23 +140,3 @@ func (p *patientClient) ListPatients() ([]models.SignupdetailResponse, error) {
 	}
 	return patientslist, nil
 }
-func (p *patientClient) CreatePrescription(prescription models.PrescriptionRequest) (models.PrescriptionRequest, error) {
-	res, err := p.Client.CreatePrescription(context.Background(), &pb.PrescReq{
-		DoctorID:   int32(prescription.DoctorID),
-		PatientID:  int32(prescription.PatientID),
-		Medicine:   prescription.Medicine,
-		Dosage:     prescription.Dosage,
-		Notes:      prescription.Notes,
-	})
-	if err != nil {
-		return models.PrescriptionRequest{}, err
-	}
-	return models.PrescriptionRequest{
-		DoctorID:   int(res.DoctorID),
-		PatientID:  int(res.PatientID),
-		Medicine:   res.Medicine,
-		Dosage:     res.Dosage,
-		Notes:      res.Notes,
-	}, nil
-
-}

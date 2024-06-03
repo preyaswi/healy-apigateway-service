@@ -1,15 +1,25 @@
 package models
 
 type Prescription struct {
-	Medicine   string    `json:"medicine" validate:"required"`
-	Dosage     string    `json:"dosage" validate:"required"`
-	Notes      string    `json:"notes"`
+	Medicine string `json:"medicine" validate:"required"`
+	Dosage   string `json:"dosage" validate:"required"`
+	Notes    string `json:"notes"`
 }
 
 type PrescriptionRequest struct {
-    DoctorID   int    `json:"doctor_id"`
-    PatientID  int `json:"patient_id"`
-    Medicine   string `json:"medicine" validate:"required"`
-    Dosage     string `json:"dosage" validate:"required"`
-    Notes      string `json:"notes"`
+	DoctorID  int    `json:"doctor_id"`
+	PatientID int    `json:"patient_id"`
+	BookingID int    `json:"booking_id"`
+	Medicine  string `json:"medicine" `
+	Dosage    string `json:"dosage" `
+	Notes     string `json:"notes"`
+}
+type CreatedPrescription struct {
+	Id        int    `json:"id"`
+	DoctorID  int    `json:"doctor_id"`
+	PatientID int    `json:"patient_id"`
+	BookingID int    `json:"booking_id"`
+	Medicine  string `json:"medicine" `
+	Dosage    string `json:"dosage" `
+	Notes     string `json:"notes"`
 }

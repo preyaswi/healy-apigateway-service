@@ -130,3 +130,26 @@ func (ad *adminClient) GetPaidPatients(doctor_id int) ([]models.Patient, error) 
 	return patientsDetails,nil
 
 }
+func (ad *adminClient) CreatePrescription(prescription models.PrescriptionRequest) (models.CreatedPrescription, error) {
+	res, err := ad.Client.CreatePrescription(context.Background(), &pb.CreatePrescriptionRequest{
+		BookingId: uint32(prescription.BookingID),
+		DoctorId: uint32(prescription.DoctorID),
+		PatientId: uint32(prescription.PatientID),
+		Medicine:   prescription.Medicine,
+		Dosage:     prescription.Dosage,
+		Notes:      prescription.Notes,
+	})
+	if err != nil {
+		return models.CreatedPrescription{}, err
+	}
+	return models.CreatedPrescription{
+		Id: int(res.Id),
+		DoctorID:   int(res.DoctorId),
+		PatientID:  int(res.PatientId),
+		BookingID: int(res.BookingId),
+		Medicine:   res.Medicine,
+		Dosage:     res.Dosage,
+		Notes:      res.Notes,
+	}, nil
+
+}

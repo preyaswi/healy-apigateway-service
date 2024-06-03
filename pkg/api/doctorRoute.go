@@ -21,7 +21,7 @@ func DoctorRoutes(route *fiber.App, doctorHandler *handler.DoctorHandler, patien
 	patient := doctor.Group("/patient")
 	{
 		patient.Get("",bookinghandler.GetBookedPatients)
-		patient.Post("/prescription/:patient_id", patientHandler.CreatePrescription)
+		patient.Post("/prescription", bookinghandler.CreatePrescription)
 	}
 
 }

@@ -7,7 +7,6 @@ import (
 	interfaces "healy-apigateway/pkg/client/interface"
 	models "healy-apigateway/pkg/utils"
 	"net/http"
-	"strconv"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
@@ -137,37 +136,5 @@ func (p *PatientHandler) ListPatients(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(errorRes)
 	}
 	successRes := response.ClientResponse("retrived list of patients", listedPatients, nil)
-	return c.Status(200).JSON(successRes)
-}
-func (p *PatientHandler)CreatePrescription(c *fiber.Ctx)error  {
-	doctor_id:=c.Locals("user_id").(int)
-	patient_id:=c.Query("patient_id")
-	patientId,err:=strconv.Atoi(patient_id)
-	if err!=nil{
-		errs := response.ClientResponse("cannot convert id string to int", nil, err.Error())
-		return c.Status(http.StatusInternalServerError).JSON(errs)
-	}
-	var prescription models.Prescription
-	if err := c.BodyParser(&prescription); err != nil {
-		errs := response.ClientResponse("details are not in correct format", nil, err.Error())
-		return c.Status(http.StatusBadRequest).JSON(errs)
-	}
-	if err := validator.New().Struct(prescription); err != nil {
-		errs := response.ClientResponse("Constraints not satisfied", nil, err.Error())
-		return c.Status(http.StatusBadRequest).JSON(errs)
-	}
-	prescriptionRequest := models.PrescriptionRequest{
-        DoctorID:   doctor_id,
-        PatientID:  patientId,
-        Medicine:   prescription.Medicine,
-        Dosage:     prescription.Dosage,
-        Notes:      prescription.Notes,
-    }
-	res,err:=p.Grpc_client.CreatePrescription(prescriptionRequest)
-	if err != nil {
-		errorRes := response.ClientResponse("failed to create prescription", nil, err.Error())
-		return c.Status(http.StatusBadRequest).JSON(errorRes)
-	}
-	successRes := response.ClientResponse("prescription created", res, nil)
 	return c.Status(200).JSON(successRes)
 }

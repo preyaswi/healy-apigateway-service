@@ -12,5 +12,6 @@ type AdminClient interface {
 	VerifyPayment(booking_id int)error
 
 	GetPaidPatients(doctor_id int)([]models.Patient,error)
+	CreatePrescription(prescription models.PrescriptionRequest) (models.CreatedPrescription, error)
 
 }
