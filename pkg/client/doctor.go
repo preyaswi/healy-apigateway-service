@@ -35,6 +35,7 @@ func (d *doctorClient) DoctorSignUp(signup models.DoctorSignUp) (models.DoctorSi
 		Specialization:    signup.Specialization,
 		YearsOfExperience: signup.YearsOfExperience,
 		LicenseNumber:     signup.LicenseNumber,
+		Fees:  signup.Fees,
 	})
 	if err != nil {
 		return models.DoctorSignUpResponse{}, err
@@ -47,6 +48,7 @@ func (d *doctorClient) DoctorSignUp(signup models.DoctorSignUp) (models.DoctorSi
 		Specialization:    signupRes.DoctorDetail.Specialization,
 		YearsOfExperience: signupRes.DoctorDetail.YearsOfExperience,
 		LicenseNumber:     signupRes.DoctorDetail.LicenseNumber,
+		Fees: signupRes.DoctorDetail.Fees,
 	}
 	return models.DoctorSignUpResponse{
 		DoctorDetail: signupdetail,
@@ -70,6 +72,7 @@ func (d *doctorClient) DoctorLogin(login models.DoctorLogin) (models.DoctorSignU
 		Specialization:    loginRes.DoctorDetail.Specialization,
 		YearsOfExperience: loginRes.DoctorDetail.YearsOfExperience,
 		LicenseNumber:     loginRes.DoctorDetail.LicenseNumber,
+		Fees: loginRes.DoctorDetail.Fees,
 	}
 	return models.DoctorSignUpResponse{
 		DoctorDetail: loginDetail,
@@ -93,6 +96,7 @@ func (d *doctorClient) DoctorsDetails() ([]models.DoctorsDetails, error) {
 			Specialization:    detail.Specialization,
 			YearsOfExperience: detail.YearsOfExperience,
 			LicenseNumber:     detail.LicenseNumber,
+			Fees: detail.Fees,
 		}
 		doctorsDetails[i] = models.DoctorsDetails{
 			DoctorDetail: doctorDetail,
@@ -115,6 +119,7 @@ func (d *doctorClient) IndividualDoctor(doctorId string) (models.IndDoctorDetail
 		Specialization:    doctor.Specialization,
 		YearsOfExperience: doctor.YearsOfExperience,
 		LicenseNumber:     doctor.LicenseNumber,
+		Fees: doctor.Fees,
 		Rating:            doctor.Rating,
 	}, nil
 }
@@ -131,6 +136,8 @@ func (d *doctorClient) DoctorProfile(id int) (models.IndDoctorDetail, error) {
 		Specialization:    res.Specialization,
 		YearsOfExperience: res.YearsOfExperience,
 		LicenseNumber:     res.LicenseNumber,
+		Fees: res.Fees,
+		Rating: res.Rating,
 	}, nil
 }
 func (d *doctorClient) RateDoctor(patientid int, doctorid string, rate models.Rate) (models.Rate, error) {
@@ -155,6 +162,7 @@ func (d *doctorClient) UpdateDoctorProfile(doctorid int, body models.DoctorDetai
 			PhoneNumber:       body.PhoneNumber,
 			Specialization:    body.Specialization,
 			YearsOfExperience: body.YearsOfExperience,
+			Fees: body.Fees,
 		},
 	})
 	if err != nil {
@@ -163,9 +171,10 @@ func (d *doctorClient) UpdateDoctorProfile(doctorid int, body models.DoctorDetai
 	return models.DoctorDetails{
 		FullName:          res.FullName,
 		Email:             res.Email,
-		PhoneNumber:       body.PhoneNumber,
-		Specialization:    body.Specialization,
-		YearsOfExperience: body.YearsOfExperience,
+		PhoneNumber:       res.PhoneNumber,
+		Specialization:    res.Specialization,
+		YearsOfExperience: res.YearsOfExperience,
+		Fees: res.Fees,
 	}, nil
 
 }

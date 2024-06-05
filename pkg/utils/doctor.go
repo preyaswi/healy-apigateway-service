@@ -9,7 +9,7 @@ type DoctorSignUp struct {
 	Specialization    string `json:"specialization"  binding:"required" validate:"required"`
 	YearsOfExperience int32  `json:"years_of_experience"  binding:"required" validate:"required,min=0,max=50"`
 	LicenseNumber     string `json:"license_number"  binding:"required" validate:"required,min=6,max=20"`
-	Fees int64  `json:"fees"  binding:"required" validate:"required,min=6"`
+	Fees              int64  `json:"fees"  binding:"required" validate:"required,min=3"`
 }
 type DoctorDetail struct {
 	Id                uint
@@ -19,6 +19,7 @@ type DoctorDetail struct {
 	Specialization    string
 	YearsOfExperience int32
 	LicenseNumber     string
+	Fees              int64
 }
 type DoctorSignUpResponse struct {
 	DoctorDetail DoctorDetail
@@ -41,21 +42,22 @@ type IndDoctorDetail struct {
 	Specialization    string
 	YearsOfExperience int32
 	LicenseNumber     string
+	Fees              int64
 	Rating            int32
 }
 type Rate struct {
 	Rate uint `json:"rate" binding:"required" validate:"required,min=0,max=5" `
 }
 type DoctorDetails struct {
-	FullName          string 
-	Email             string 
-	PhoneNumber       string 
-	Specialization    string 
-	YearsOfExperience int32  
+	FullName          string
+	Email             string
+	PhoneNumber       string
+	Specialization    string
+	YearsOfExperience int32
+	Fees              int64
 }
-type DoctorPaymentDetail struct{
-	Doctor_id int
+type DoctorPaymentDetail struct {
+	Doctor_id  int
 	DoctorName string
-	Fees uint64
-
+	Fees       uint64
 }
