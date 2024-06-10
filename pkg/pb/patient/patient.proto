@@ -3,15 +3,24 @@ syntax="proto3";
 package patient;
 option go_package="./pkg/pb/patient";
 service Patient{
-	rpc PatientSignUp(PatientSignUpRequest) returns (PatientSignUpResponse) {};
-	rpc PatientLogin(PatientLoginRequest)returns (PatientLoginResponse){};
+	rpc GoogleSignIn(GoogleSignInRequest) returns (PatientSignUpResponse){};
 	rpc IndPatientDetails(idreq)returns(PatientDetails){};
 	rpc UpdatePatientDetails(UpdateRequest)returns(InPatientDetails){};
-	rpc UpdatePassword(UpdatePasswordRequest)returns(UpdatePasswordResponse){};
 
     rpc ListPatients(req)returns(listpares){};
 
 
+}
+message GoogleSignInRequest{
+	string google_id = 1;
+    string email = 2;
+    string name = 3;
+}
+message GoogleSignInResponse{
+uint32 id=1;
+string google_id=2;
+string fullname=3;
+string email=4;
 }
 message PatientSignUpRequest{
 	string fullname=1;
@@ -29,7 +38,7 @@ message PatientDetails {
     string contactnumber=5;
 }
 message PatientSignUpResponse {
-	PatientDetails  PatientDetails=1;
+	GoogleSignInResponse PatientDetails =1;
 	string AccessToken=2; 
 	string RefreshToken =3;
 }
@@ -55,13 +64,7 @@ message UpdateRequest{
 	uint64 patient_id=1;
 	InPatientDetails InPatientDetails=2;
 }
-message UpdatePasswordRequest {
-	uint64 patient_id=1;
-    string old_password =2;
-    string new_password = 3;
-    string confirm_new_password = 4;
-}
-message UpdatePasswordResponse{}
+
 message listpares{
 	repeated PatientDetails pa=1;
 }

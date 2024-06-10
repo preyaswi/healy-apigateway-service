@@ -19,11 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Patient_PatientSignUp_FullMethodName        = "/patient.Patient/PatientSignUp"
-	Patient_PatientLogin_FullMethodName         = "/patient.Patient/PatientLogin"
+	Patient_GoogleSignIn_FullMethodName         = "/patient.Patient/GoogleSignIn"
 	Patient_IndPatientDetails_FullMethodName    = "/patient.Patient/IndPatientDetails"
 	Patient_UpdatePatientDetails_FullMethodName = "/patient.Patient/UpdatePatientDetails"
-	Patient_UpdatePassword_FullMethodName       = "/patient.Patient/UpdatePassword"
 	Patient_ListPatients_FullMethodName         = "/patient.Patient/ListPatients"
 )
 
@@ -31,11 +29,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PatientClient interface {
-	PatientSignUp(ctx context.Context, in *PatientSignUpRequest, opts ...grpc.CallOption) (*PatientSignUpResponse, error)
-	PatientLogin(ctx context.Context, in *PatientLoginRequest, opts ...grpc.CallOption) (*PatientLoginResponse, error)
+	GoogleSignIn(ctx context.Context, in *GoogleSignInRequest, opts ...grpc.CallOption) (*PatientSignUpResponse, error)
 	IndPatientDetails(ctx context.Context, in *Idreq, opts ...grpc.CallOption) (*PatientDetails, error)
 	UpdatePatientDetails(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*InPatientDetails, error)
-	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error)
 	ListPatients(ctx context.Context, in *Req, opts ...grpc.CallOption) (*Listpares, error)
 }
 
@@ -47,18 +43,9 @@ func NewPatientClient(cc grpc.ClientConnInterface) PatientClient {
 	return &patientClient{cc}
 }
 
-func (c *patientClient) PatientSignUp(ctx context.Context, in *PatientSignUpRequest, opts ...grpc.CallOption) (*PatientSignUpResponse, error) {
+func (c *patientClient) GoogleSignIn(ctx context.Context, in *GoogleSignInRequest, opts ...grpc.CallOption) (*PatientSignUpResponse, error) {
 	out := new(PatientSignUpResponse)
-	err := c.cc.Invoke(ctx, Patient_PatientSignUp_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *patientClient) PatientLogin(ctx context.Context, in *PatientLoginRequest, opts ...grpc.CallOption) (*PatientLoginResponse, error) {
-	out := new(PatientLoginResponse)
-	err := c.cc.Invoke(ctx, Patient_PatientLogin_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Patient_GoogleSignIn_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -83,15 +70,6 @@ func (c *patientClient) UpdatePatientDetails(ctx context.Context, in *UpdateRequ
 	return out, nil
 }
 
-func (c *patientClient) UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error) {
-	out := new(UpdatePasswordResponse)
-	err := c.cc.Invoke(ctx, Patient_UpdatePassword_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *patientClient) ListPatients(ctx context.Context, in *Req, opts ...grpc.CallOption) (*Listpares, error) {
 	out := new(Listpares)
 	err := c.cc.Invoke(ctx, Patient_ListPatients_FullMethodName, in, out, opts...)
@@ -105,11 +83,9 @@ func (c *patientClient) ListPatients(ctx context.Context, in *Req, opts ...grpc.
 // All implementations must embed UnimplementedPatientServer
 // for forward compatibility
 type PatientServer interface {
-	PatientSignUp(context.Context, *PatientSignUpRequest) (*PatientSignUpResponse, error)
-	PatientLogin(context.Context, *PatientLoginRequest) (*PatientLoginResponse, error)
+	GoogleSignIn(context.Context, *GoogleSignInRequest) (*PatientSignUpResponse, error)
 	IndPatientDetails(context.Context, *Idreq) (*PatientDetails, error)
 	UpdatePatientDetails(context.Context, *UpdateRequest) (*InPatientDetails, error)
-	UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error)
 	ListPatients(context.Context, *Req) (*Listpares, error)
 	mustEmbedUnimplementedPatientServer()
 }
@@ -118,20 +94,14 @@ type PatientServer interface {
 type UnimplementedPatientServer struct {
 }
 
-func (UnimplementedPatientServer) PatientSignUp(context.Context, *PatientSignUpRequest) (*PatientSignUpResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PatientSignUp not implemented")
-}
-func (UnimplementedPatientServer) PatientLogin(context.Context, *PatientLoginRequest) (*PatientLoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PatientLogin not implemented")
+func (UnimplementedPatientServer) GoogleSignIn(context.Context, *GoogleSignInRequest) (*PatientSignUpResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GoogleSignIn not implemented")
 }
 func (UnimplementedPatientServer) IndPatientDetails(context.Context, *Idreq) (*PatientDetails, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IndPatientDetails not implemented")
 }
 func (UnimplementedPatientServer) UpdatePatientDetails(context.Context, *UpdateRequest) (*InPatientDetails, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePatientDetails not implemented")
-}
-func (UnimplementedPatientServer) UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
 }
 func (UnimplementedPatientServer) ListPatients(context.Context, *Req) (*Listpares, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPatients not implemented")
@@ -149,38 +119,20 @@ func RegisterPatientServer(s grpc.ServiceRegistrar, srv PatientServer) {
 	s.RegisterService(&Patient_ServiceDesc, srv)
 }
 
-func _Patient_PatientSignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PatientSignUpRequest)
+func _Patient_GoogleSignIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoogleSignInRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PatientServer).PatientSignUp(ctx, in)
+		return srv.(PatientServer).GoogleSignIn(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Patient_PatientSignUp_FullMethodName,
+		FullMethod: Patient_GoogleSignIn_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PatientServer).PatientSignUp(ctx, req.(*PatientSignUpRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Patient_PatientLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PatientLoginRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PatientServer).PatientLogin(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Patient_PatientLogin_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PatientServer).PatientLogin(ctx, req.(*PatientLoginRequest))
+		return srv.(PatientServer).GoogleSignIn(ctx, req.(*GoogleSignInRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -221,24 +173,6 @@ func _Patient_UpdatePatientDetails_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Patient_UpdatePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdatePasswordRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PatientServer).UpdatePassword(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Patient_UpdatePassword_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PatientServer).UpdatePassword(ctx, req.(*UpdatePasswordRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Patient_ListPatients_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Req)
 	if err := dec(in); err != nil {
@@ -265,12 +199,8 @@ var Patient_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*PatientServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "PatientSignUp",
-			Handler:    _Patient_PatientSignUp_Handler,
-		},
-		{
-			MethodName: "PatientLogin",
-			Handler:    _Patient_PatientLogin_Handler,
+			MethodName: "GoogleSignIn",
+			Handler:    _Patient_GoogleSignIn_Handler,
 		},
 		{
 			MethodName: "IndPatientDetails",
@@ -279,10 +209,6 @@ var Patient_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdatePatientDetails",
 			Handler:    _Patient_UpdatePatientDetails_Handler,
-		},
-		{
-			MethodName: "UpdatePassword",
-			Handler:    _Patient_UpdatePassword_Handler,
 		},
 		{
 			MethodName: "ListPatients",

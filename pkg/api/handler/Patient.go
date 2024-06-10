@@ -2,65 +2,95 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"healy-apigateway/pkg/api/response"
 	interfaces "healy-apigateway/pkg/client/interface"
+	"healy-apigateway/pkg/config"
 	models "healy-apigateway/pkg/utils"
+	"io"
+
 	"net/http"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 type PatientHandler struct {
 	Grpc_client interfaces.PatientClient
+	oauthConfig *oauth2.Config
 }
 
-func NewPatientHandler(PatientClient interfaces.PatientClient) *PatientHandler {
+func NewPatientHandler(PatientClient interfaces.PatientClient,cfg config.Config) *PatientHandler {
 	return &PatientHandler{
 		Grpc_client: PatientClient,
+		oauthConfig: &oauth2.Config{
+			ClientID: cfg.GoogleClientId,
+			ClientSecret: cfg.GoogleSecretId,
+			RedirectURL: cfg.RedirectURL,
+			Scopes: []string{
+				"https://www.googleapis.com/auth/userinfo.email",
+				"https://www.googleapis.com/auth/userinfo.profile",
+			},
+			Endpoint: google.Endpoint,
+		},
 	}
 }
 
-func (p *PatientHandler) PatientSignup(c *fiber.Ctx) error {
-	var SignupDetail models.PatientSignUp
-	if err := c.BodyParser(&SignupDetail); err != nil {
-		errs := response.ClientResponse("Details are not in correct format", nil, err.Error())
+func (p *PatientHandler) GoogleLogin(c *fiber.Ctx) error {
+    url := p.oauthConfig.AuthCodeURL("state", oauth2.AccessTypeOffline)
+    return c.Redirect(url)
+}
+func (p *PatientHandler) GoogleCallback(c *fiber.Ctx) error {
+    code := c.Query("code")
+    token, err := p.oauthConfig.Exchange(context.Background(), code)
+    if err != nil {
+        return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+            "error": "Failed to exchange token",
+        })
+    }
+
+    client := p.oauthConfig.Client(context.Background(), token)
+    resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
+    if err != nil {
+        return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+            "error": "Failed to get user info",
+        })
+    }
+    defer resp.Body.Close()
+
+	userInfo, err := io.ReadAll(resp.Body)
+    if err != nil {
+        return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+            "error": "Failed to read user info",
+        })
+    }
+
+    var googleUser models.GoogleUserInfo
+    if err := json.Unmarshal(userInfo, &googleUser); err != nil {
+        errs := response.ClientResponse("failed to parse user info",nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
-	}
-	if err := validator.New().Struct(SignupDetail); err != nil {
-		fmt.Println(err, "validation error")
-		errs := response.ClientResponse("Constraints not satisfied", nil, err.Error())
+	
+    }
+
+    patient, err := p.Grpc_client.GoogleSignIn(googleUser.ID, googleUser.Email, googleUser.Name)
+    if err != nil {
+		errs := response.ClientResponse( "error: Failed to authenticate with patient service", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
-	}
-	Patient, err := p.Grpc_client.PatientsSignUp(SignupDetail)
-	if err != nil {
-		errs := response.ClientResponse("Details not in correct format", nil, err.Error())
-		return c.Status(http.StatusBadRequest).JSON(errs)
-	}
-	success := response.ClientResponse("Patient created successfully", Patient, nil)
+
+    }
+	success := response.ClientResponse("Patient created successfully", patient, nil)
 	return c.Status(201).JSON(success)
 }
-func (p *PatientHandler) PatientLogin(c *fiber.Ctx) error {
-	var logindetail models.PatientLogin
-	if err := c.BodyParser(&logindetail); err != nil {
-		errs := response.ClientResponse("logindetails are not in correct format", nil, err.Error())
-		return c.Status(http.StatusBadRequest).JSON(errs)
-	}
 
-	if err := validator.New().Struct(logindetail); err != nil {
-		errs := response.ClientResponse("Constraints not satisfied", nil, err.Error())
-		return c.Status(http.StatusBadRequest).JSON(errs)
-	}
-	patient, err := p.Grpc_client.PatientLogin(logindetail)
-
-	if err != nil {
-		errs := response.ClientResponse("details are not in correct format", nil, err.Error())
-		return c.Status(http.StatusBadRequest).JSON(errs)
-	}
-	success := response.ClientResponse("patient logined succesfully", patient, nil)
-	return c.Status(201).JSON(success)
-}
+// 		errs := response.ClientResponse("details are not in correct format", nil, err.Error())
+// 		return c.Status(http.StatusBadRequest).JSON(errs)
+// 	}
+// 	success := response.ClientResponse("patient logined succesfully", patient, nil)
+// 	return c.Status(201).JSON(success)
+// }
 func (p *PatientHandler) PatientDetails(c *fiber.Ctx) error {
 
 	patientID := c.Locals("user_id").(int)
@@ -100,34 +130,6 @@ func (p *PatientHandler) UpdatePatientDetails(c *fiber.Ctx) error {
 	successRes := response.ClientResponse("Updated User Details", updatedDetails, nil)
 	return c.Status(200).JSON(successRes)
 
-}
-
-type contextKey string
-
-const (
-	userIDKey contextKey = "userID"
-)
-
-func (p *PatientHandler) UpdatePassword(c *fiber.Ctx) error {
-	userID := c.Locals("user_id").(int)
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, userIDKey, userID)
-	var body models.UpdatePassword
-
-	if err := c.BodyParser(&body); err != nil {
-		errorRes := response.ClientResponse("fields provided are in wrong format", nil, err.Error())
-		return c.Status(http.StatusBadRequest).JSON(errorRes)
-	}
-
-	err := p.Grpc_client.UpdatePassword(ctx, userID, body)
-
-	if err != nil {
-		errorRes := response.ClientResponse("failed updating password", nil, err.Error())
-		return c.Status(http.StatusInternalServerError).JSON(errorRes)
-	}
-
-	successRes := response.ClientResponse("Password updated successfully", nil, nil)
-	return c.Status(http.StatusCreated).JSON(successRes)
 }
 func (p *PatientHandler) ListPatients(c *fiber.Ctx) error {
 	listedPatients, err := p.Grpc_client.ListPatients()

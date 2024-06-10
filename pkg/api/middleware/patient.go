@@ -22,7 +22,7 @@ func UserAuthMiddleware() fiber.Handler {
 			}
 		}
 		userID, userEmail, err := helper.ExtractUserIDFromToken(tokenString)
-		fmt.Println(userID)
+		fmt.Println(userID,"userid",userEmail,"useremail")
 		if err != nil {
 			return c.Status(http.StatusUnauthorized).JSON(fiber.Map{
 				"error":   "Unauthorized",

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"healy-apigateway/pkg/api/response"
 	interfaces "healy-apigateway/pkg/client/interface"
 	"net/http"
@@ -32,7 +31,6 @@ func (pa *PaymentHandler) MakePaymentRazorpay(c *fiber.Ctx) error {
 		errs := response.ClientResponse("couldn't make payment Details", nil, err.Error())
 		return c.Status(http.StatusInternalServerError).JSON(errs)
 	}
-	fmt.Println(paymentDetails)
 	return c.Status(fiber.StatusOK).Render("index", fiber.Map{
 		"final_price": paymentDetails.Fees * 100,
 		"razor_id":    razorId,

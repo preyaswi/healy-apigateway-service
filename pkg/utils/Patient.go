@@ -1,12 +1,15 @@
 package models
 
-type PatientSignUp struct {
-	FullName        string `json:"full_name" binding:"required" validate:"required,min=3,max=50"`
-	Email           string `json:"email" binding:"required" validate:"required"`
-	Password        string `json:"password" binding:"required" validate:"required,min=3"`
-	ConfirmPassword string `json:"confirm_password" binding:"required" validate:"required"`
-	Gender          string `json:"gender" binding:"required" validate:"required"`
-	ContactNumber   string `json:"contact_number" binding:"required" validate:"required,min=10,max=15"`
+type GoogleUserInfo struct {
+	ID    string `json:"id"` // Google's unique user ID
+	Email string `json:"email"`
+	Name  string `json:"name"`
+}
+type GoogleSignupdetailResponse struct {
+	Id       uint
+	GoogleId string
+	FullName string
+	Email    string
 }
 
 type SignupdetailResponse struct {
@@ -17,15 +20,11 @@ type SignupdetailResponse struct {
 	Contactnumber string
 }
 type TokenPatient struct {
-	Patient      SignupdetailResponse
+	Patient      GoogleSignupdetailResponse
 	AccessToken  string
 	RefreshToken string
 }
 
-type PatientLogin struct {
-	Email    string
-	Password string
-}
 type PatientDetails struct {
 	Fullname      string
 	Email         string
@@ -33,15 +32,12 @@ type PatientDetails struct {
 	Contactnumber string
 }
 
-type UpdatePassword struct{
-	OldPassword        string `json:"old_password" binding:"required"`
-    NewPassword        string `json:"new_password" binding:"required"`
-    ConfirmNewPassword string `json:"confirm_new_password" binding:"required"`
-}
 type Patient struct {
-    Id            uint
-    Fullname      string
-    Email         string
-    Gender        string
-    Contactnumber string
+	BookingId     uint
+	PaymentStatus string
+	PatientId     uint
+	Fullname      string
+	Email         string
+	Gender        string
+	Contactnumber string
 }

@@ -8,9 +8,9 @@ import (
 )
 
 func PatientRoutes(route *fiber.App, patientHandler *handler.PatientHandler, doctorHandler *handler.DoctorHandler, adminHandler *handler.AdminHandler,bookingHandler *handler.BookingHandler,paymentHandler *handler.PaymentHandler) {
+	route.Get("/google/redirect", patientHandler.GoogleCallback)
 	patient := route.Group("/patient")
-	patient.Post("/signup", patientHandler.PatientSignup)
-	patient.Post("/login", patientHandler.PatientLogin)
+	patient.Get("login",patientHandler.GoogleLogin)
 	patient.Get("/payment", paymentHandler.MakePaymentRazorpay)
 	patient.Get("/verifypayment",paymentHandler.VerifyPayment)
 
@@ -19,7 +19,6 @@ func PatientRoutes(route *fiber.App, patientHandler *handler.PatientHandler, doc
 		profile := patient.Group("/profile")
 		profile.Get("", patientHandler.PatientDetails)
 		profile.Put("", patientHandler.UpdatePatientDetails)
-		profile.Put("/update-password", patientHandler.UpdatePassword)
 		
 
 		doctor := patient.Group("/doctor")

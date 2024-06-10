@@ -9,7 +9,7 @@ import (
 
 func InitializeApi(cfg config.Config) (*server.ServerHTTP, error) {
 	patientClient := client.NewPatientClient(cfg)
-	patientHandler := handler.NewPatientHandler(patientClient)
+	patientHandler := handler.NewPatientHandler(patientClient,cfg)
 
 	doctorClient:=client.NewDoctorClient(cfg)
 	doctorHandler:=handler.NewDoctorHandler(doctorClient)

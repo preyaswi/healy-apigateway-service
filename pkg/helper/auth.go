@@ -6,6 +6,12 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
+type AuthUserClaims struct {
+	Id    int    `json:"id"`
+	Email string `json:"email"`
+	Role  string `json:"role"`
+	jwt.StandardClaims
+}
 func GetTokenFromHeader(header string) string {
 	if len(header) > 7 && header[:7] == "Bearer " {
 		return header[7:]

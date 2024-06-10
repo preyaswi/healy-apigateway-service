@@ -120,7 +120,7 @@ func (ad *adminClient) GetPaidPatients(doctor_id int) ([]models.Patient, error) 
 	patientsDetails := make([]models.Patient, len(res.Patients))
 	for i, patient := range res.Patients {
 		patientsDetails[i] = models.Patient{
-			Id:            uint(patient.Id),
+			// Id:            uint(patient.Id),
 			Fullname:      patient.Fullname,
 			Email:         patient.Email,
 			Gender:        patient.Gender,
