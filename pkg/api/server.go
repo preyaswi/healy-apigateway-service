@@ -29,7 +29,7 @@ func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler
 }
 func (s *ServerHTTP) Start(cfg config.Config) {
 	
-    log.Printf("starting server on :5080")
+    log.Printf("starting server on :8000")
     err := s.engine.Listen(cfg.Port)
     if err != nil {
         log.Fatalf("error while starting the server: %v", err)

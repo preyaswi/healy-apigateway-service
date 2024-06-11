@@ -84,12 +84,7 @@ func (p *PatientHandler) GoogleCallback(c *fiber.Ctx) error {
 	return c.Status(201).JSON(success)
 }
 
-// 		errs := response.ClientResponse("details are not in correct format", nil, err.Error())
-// 		return c.Status(http.StatusBadRequest).JSON(errs)
-// 	}
-// 	success := response.ClientResponse("patient logined succesfully", patient, nil)
-// 	return c.Status(201).JSON(success)
-// }
+
 func (p *PatientHandler) PatientDetails(c *fiber.Ctx) error {
 
 	patientID := c.Locals("user_id").(int)

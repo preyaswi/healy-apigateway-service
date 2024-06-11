@@ -8,24 +8,19 @@ import (
 )
 
 func AdminRoutes(route *fiber.App, adminHandler *handler.AdminHandler,patientHandler *handler.PatientHandler,doctorHandler *handler.DoctorHandler) {
-	doctor := route.Group("/admin")
-	doctor.Post("/signup",adminHandler.AdminSignUp)
-	doctor.Post("/login",adminHandler.LoginHandler)
-	doctor.Use(middleware.AdminAuthMiddleware())
+	admin := route.Group("/admin")
+	admin.Post("/signup", middleware.LoggingMiddleware(adminHandler.AdminSignUp))
+	admin.Post("/login", middleware.LoggingMiddleware(adminHandler.LoginHandler))
+	admin.Use(middleware.AdminAuthMiddleware())
 	{
-		dashboard:=doctor.Group("/dashboard")
-		patient:=dashboard.Group("/patients")
+		dashboard := admin.Group("/dashboard")
+		patient := dashboard.Group("/patients")
 		{
-			patient.Get("",patientHandler.ListPatients)
+			patient.Get("", middleware.LoggingMiddleware(patientHandler.ListPatients))
 		}
-		doctor:=dashboard.Group("/doctors")
+		doctor := dashboard.Group("/doctors")
 		{
-			doctor.Get("",doctorHandler.DoctorsDetails)
+			doctor.Get("", middleware.LoggingMiddleware(doctorHandler.DoctorsDetails))
 		}
 	}
-//paypal -merchat
-//multiparti
-//history-of the schedule
-//chat-kafka 
-//chat-not
 }

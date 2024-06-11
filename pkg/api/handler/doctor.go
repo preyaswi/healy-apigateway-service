@@ -72,9 +72,9 @@ func (d *DoctorHandler) IndividualDoctor(c *fiber.Ctx) error {
 	doctorID := c.Params("doctor_id")
 	doctor, err := d.Grpc_Client.IndividualDoctor(doctorID)
 	if err != nil {
-		errs := response.ClientResponse("couldn't fetch octors data", nil, err.Error())
-		return c.Status(400).JSON(errs)
-	}
+        errorRes := response.ClientResponse("couldn't fetch doctors data", nil, err.Error())
+        return c.Status(http.StatusBadRequest).JSON(errorRes)
+    }
 	success := response.ClientResponse("returned individual doctor data", doctor, nil)
 	return c.Status(201).JSON(success)
 }
