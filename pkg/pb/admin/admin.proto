@@ -80,17 +80,19 @@ message GetPaidPatientsRequest {
   int32 doctor_id = 1;
 }
 message Patient {
-  uint32 booking_id=1;
-  string payment_status=2;
-  uint32 patient_id = 3;
-  string fullname = 4;
-  string email = 5;
-  string gender = 6;
-  string contactnumber = 7;
+  uint32 id = 1;
+  string fullname = 2;
+  string email = 3;
+  string gender = 4;
+  string contactnumber = 5;
 }
-
+message BookedPatient {
+    uint32 booking_id = 1;
+    string payment_status=2;
+    Patient patient_detail =3;
+}
 message GetPaidPatientsResponse {
-  repeated Patient patients = 1;
+  repeated BookedPatient booked_patients = 1;
 }
 message CreatePrescriptionRequest {
     uint32 booking_id = 1;

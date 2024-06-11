@@ -79,33 +79,32 @@ func (b *BookingHandler) GetBookedPatients(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(success)
 }
 func (b *BookingHandler) CreatePrescription(c *fiber.Ctx) error {
-    doctorID := c.Locals("user_id").(int)
-    patientIDStr := c.Query("patient_id")
+	doctorID := c.Locals("user_id").(int)
+	patientIDStr := c.Query("patient_id")
 	bookingIDStr := c.Query("booking_id")
-    patientID, err := strconv.Atoi(patientIDStr)
-    if err != nil {
-        return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert patient ID string to int", nil, err.Error()))
-    }
+	patientID, err := strconv.Atoi(patientIDStr)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert patient ID string to int", nil, err.Error()))
+	}
 	bookingID, err := strconv.Atoi(bookingIDStr)
-    if err != nil {
-        return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert booking ID string to int", nil, err.Error()))
-    }
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert booking ID string to int", nil, err.Error()))
+	}
 
+	var prescription models.PrescriptionRequest
+	if err := c.BodyParser(&prescription); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(response.ClientResponse("Details are not in correct format", nil, err.Error()))
+	}
 
-    var prescription models.PrescriptionRequest
-    if err := c.BodyParser(&prescription); err != nil {
-        return c.Status(http.StatusBadRequest).JSON(response.ClientResponse("Details are not in correct format", nil, err.Error()))
-    }
+	prescription.DoctorID = doctorID
+	prescription.PatientID = patientID
+	prescription.BookingID = bookingID
 
-    prescription.DoctorID = doctorID
-    prescription.PatientID = patientID
-	prescription.BookingID=bookingID
+	if err := validator.New().Struct(prescription); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(response.ClientResponse("Constraints not satisfied", nil, err.Error()))
+	}
 
-    if err := validator.New().Struct(prescription); err != nil {
-        return c.Status(http.StatusBadRequest).JSON(response.ClientResponse("Constraints not satisfied", nil, err.Error()))
-    }
-
-    createdPrescription, err := b.Grpc_Client.CreatePrescription(prescription)
+	createdPrescription, err := b.Grpc_Client.CreatePrescription(prescription)
 	if err != nil {
 		errorRes := response.ClientResponse("failed to create prescription", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errorRes)

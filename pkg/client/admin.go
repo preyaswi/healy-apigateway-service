@@ -117,18 +117,19 @@ func (ad *adminClient) GetPaidPatients(doctor_id int) ([]models.Patient, error) 
 	if err != nil {
 		return []models.Patient{}, err
 	}
-	patientsDetails := make([]models.Patient, len(res.Patients))
-	for i, patient := range res.Patients {
+	patientsDetails := make([]models.Patient, len(res.BookedPatients))
+	for i, bookedPatient := range res.BookedPatients {
 		patientsDetails[i] = models.Patient{
-			// Id:            uint(patient.Id),
-			Fullname:      patient.Fullname,
-			Email:         patient.Email,
-			Gender:        patient.Gender,
-			Contactnumber: patient.Contactnumber,
+			BookingId: uint(bookedPatient.BookingId),
+			PaymentStatus: bookedPatient.PaymentStatus,
+			PatientId: uint(bookedPatient.PatientDetail.Id),
+			Fullname:  bookedPatient.PatientDetail.Fullname,
+			Email:     bookedPatient.PatientDetail.Email,
+			Gender:    bookedPatient.PatientDetail.Gender,
+			Contactnumber: bookedPatient.PatientDetail.Contactnumber,
 		}
 	}
-	return patientsDetails,nil
-
+	return patientsDetails, nil
 }
 func (ad *adminClient) CreatePrescription(prescription models.PrescriptionRequest) (models.CreatedPrescription, error) {
 	res, err := ad.Client.CreatePrescription(context.Background(), &pb.CreatePrescriptionRequest{

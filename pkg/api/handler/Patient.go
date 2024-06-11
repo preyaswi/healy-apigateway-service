@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"healy-apigateway/pkg/api/response"
 	interfaces "healy-apigateway/pkg/client/interface"
 	"healy-apigateway/pkg/config"
@@ -95,7 +94,6 @@ func (p *PatientHandler) PatientDetails(c *fiber.Ctx) error {
 
 	patientID := c.Locals("user_id").(int)
 
-	fmt.Println(patientID, "patient id")
 	patientDetails, err := p.Grpc_client.PatientDetails(patientID)
 	if err != nil {
 		errorRes := response.ClientResponse("failed to retrieve patient details", nil, err.Error())
