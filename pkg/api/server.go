@@ -14,7 +14,7 @@ type ServerHTTP struct {
 	engine *fiber.App
 }
 
-func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler.DoctorHandler,adminHandler *handler.AdminHandler,bookingHandler *handler.BookingHandler,paymentHandler *handler.PaymentHandler) *ServerHTTP {
+func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler.DoctorHandler,adminHandler *handler.AdminHandler,bookingHandler *handler.BookingHandler,paymentHandler *handler.PaymentHandler,chatHandler *handler.ChatHandler) *ServerHTTP {
 	engine := html.New("./template", ".html")
 	route := fiber.New(fiber.Config{
 		Views: engine,
@@ -23,6 +23,7 @@ func NewServerHTTP(patientHandler *handler.PatientHandler,doctorHandler *handler
 	DoctorRoutes(route,doctorHandler,patientHandler,bookingHandler)
 	PatientRoutes(route,patientHandler,doctorHandler,adminHandler,bookingHandler,paymentHandler)
 	AdminRoutes(route,adminHandler,patientHandler,doctorHandler)
+	ChatRoute(route,chatHandler)
 	return &ServerHTTP{
 		engine: route,
 	}

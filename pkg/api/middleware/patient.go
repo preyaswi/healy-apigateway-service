@@ -31,6 +31,8 @@ func UserAuthMiddleware() fiber.Handler {
 		}
 		c.Locals("user_id", userID)
 		c.Locals("user_email", userEmail)
+		c.Locals("patient_id",userID)
+		c.Locals("doctor_id",userID)
 		fmt.Println(userID,"userid")
 		return c.Next()
 	}
