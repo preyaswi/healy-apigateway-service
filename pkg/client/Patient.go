@@ -36,12 +36,12 @@ func (p *patientClient) GoogleSignIn(googleID, email, name string) (models.Token
     }
 
     patientDetails := models.GoogleSignupdetailResponse{
-       Id: uint(res.PatientDetails.Id),
+       Id: res.PatientDetails.Id,
 	  GoogleId: res.PatientDetails.GoogleId,
 	  FullName: res.PatientDetails.Fullname,
 	  Email: res.PatientDetails.Email, 
     }
-
+fmt.Println(res.PatientDetails.Id,"patient id")
     return models.TokenPatient{
         Patient:      patientDetails,
         AccessToken:  res.AccessToken,
@@ -50,20 +50,20 @@ func (p *patientClient) GoogleSignIn(googleID, email, name string) (models.Token
 }
 
 
-func (p *patientClient) PatientDetails(user_id int) (models.SignupdetailResponse, error) {
-	res, err := p.Client.IndPatientDetails(context.Background(), &pb.Idreq{UserId: uint64(user_id)})
+func (p *patientClient) PatientDetails(user_id string) (models.SignupdetailResponse, error){
+	res, err := p.Client.IndPatientDetails(context.Background(), &pb.Idreq{UserId: user_id})
 	if err != nil {
 		return models.SignupdetailResponse{}, err
 	}
 	return models.SignupdetailResponse{
-		Id:            uint(res.Id),
+		Id:            res.Id,
 		Fullname:      res.Fullname,
 		Email:         res.Email,
 		Gender:        res.Gender,
 		Contactnumber: res.Contactnumber,
 	}, nil
 }
-func (p *patientClient) UpdatePatientDetails(pa models.PatientDetails, patient_id int) (models.PatientDetails, error) {
+func (p *patientClient) UpdatePatientDetails(pa models.PatientDetails, patient_id string) (models.PatientDetails, error) {
 	patient := &pb.InPatientDetails{
 		Fullname:      pa.Fullname,
 		Email:         pa.Email,
@@ -71,7 +71,7 @@ func (p *patientClient) UpdatePatientDetails(pa models.PatientDetails, patient_i
 		Contactnumber: pa.Contactnumber,
 	}
 	res, err := p.Client.UpdatePatientDetails(context.Background(), &pb.UpdateRequest{
-		PatientId:        uint64(patient_id),
+		PatientId:        patient_id,
 		InPatientDetails: patient,
 	})
 	if err != nil {
@@ -93,7 +93,7 @@ func (p *patientClient) ListPatients() ([]models.SignupdetailResponse, error) {
 	patientslist := make([]models.SignupdetailResponse, len(res.Pa))
 	for i, patient := range res.Pa {
 		patientdetail := models.SignupdetailResponse{
-			Id:            uint(patient.Id),
+			Id:            patient.Id,
 			Fullname:      patient.Fullname,
 			Email:         patient.Email,
 			Gender:        patient.Gender,

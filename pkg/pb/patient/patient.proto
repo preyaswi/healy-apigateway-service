@@ -17,7 +17,7 @@ message GoogleSignInRequest{
     string name = 3;
 }
 message GoogleSignInResponse{
-uint32 id=1;
+string id=1;
 string google_id=2;
 string fullname=3;
 string email=4;
@@ -31,7 +31,7 @@ message PatientSignUpRequest{
 	string contactnumber=6;
 }
 message PatientDetails {
-	uint64 id=1;
+	string id=1;
     string fullname=2;
     string email=3;
 	string gender=4;
@@ -52,7 +52,7 @@ message PatientLoginResponse{
 	string RefreshToken =3;
 }
 message idreq{
-	uint64 user_id=1;
+	string user_id=1;
 }
 message InPatientDetails{
 	string fullname=1;
@@ -61,7 +61,7 @@ message InPatientDetails{
     string contactnumber=4;
 }
 message UpdateRequest{
-	uint64 patient_id=1;
+	string patient_id=1;
 	InPatientDetails InPatientDetails=2;
 }
 

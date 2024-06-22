@@ -76,7 +76,7 @@ message Rate{
     uint32 Rate=1;
 }
 message RateDoctorReq{
-    uint64 Patientid=1;
+    string Patientid=1;
     string doctor_id=2;
     Rate Rate=3;
 

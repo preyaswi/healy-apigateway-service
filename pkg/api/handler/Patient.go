@@ -87,22 +87,20 @@ func (p *PatientHandler) GoogleCallback(c *fiber.Ctx) error {
 
 func (p *PatientHandler) PatientDetails(c *fiber.Ctx) error {
 
-	patientID := c.Locals("user_id").(int)
-
+	patientID := c.Locals("user_id").(string)
 	patientDetails, err := p.Grpc_client.PatientDetails(patientID)
 	if err != nil {
 		errorRes := response.ClientResponse("failed to retrieve patient details", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errorRes)
 
 	}
-
 	successRes := response.ClientResponse("patient Details", patientDetails, nil)
 	return c.Status(200).JSON(successRes)
 
 }
 func (p *PatientHandler) UpdatePatientDetails(c *fiber.Ctx) error {
 
-	user_id := c.Locals("user_id").(int)
+	user_id := c.Locals("user_id").(string)
 
 	var patient models.PatientDetails
 

@@ -70,9 +70,9 @@ func (ad *adminClient) AdminLogin(adminDetails models.AdminLogin) (models.TokenA
 		Token: admin.Token,
 	}, nil
 }
-func (ad *adminClient) AddToBookings(patientid, doctorid int) error {
+func (ad *adminClient) AddToBookings(patientid string, doctorid int) error {
 	_, err := ad.Client.AddTobookings(context.Background(), &pb.Bookingreq{
-		PatientId: int32(patientid),
+		PatientId: patientid,
 		DoctorId:  int32(doctorid),
 	})
 	if err != nil {
@@ -80,8 +80,8 @@ func (ad *adminClient) AddToBookings(patientid, doctorid int) error {
 	}
 	return nil
 }
-func (ad *adminClient) CancelBookings(patientid, bookingid int) error {
-	_, err := ad.Client.CancelBookings(context.Background(), &pb.Canbookingreq{PatientId: int32(patientid), BookingId: int32(bookingid)})
+func (ad *adminClient) CancelBookings(patientid string, bookingid int) error {
+	_, err := ad.Client.CancelBookings(context.Background(), &pb.Canbookingreq{PatientId:patientid, BookingId: int32(bookingid)})
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func (ad *adminClient) CreatePrescription(prescription models.PrescriptionReques
 	res, err := ad.Client.CreatePrescription(context.Background(), &pb.CreatePrescriptionRequest{
 		BookingId: uint32(prescription.BookingID),
 		DoctorId: uint32(prescription.DoctorID),
-		PatientId: uint32(prescription.PatientID),
+		PatientId: prescription.PatientID,
 		Medicine:   prescription.Medicine,
 		Dosage:     prescription.Dosage,
 		Notes:      prescription.Notes,
@@ -146,7 +146,7 @@ func (ad *adminClient) CreatePrescription(prescription models.PrescriptionReques
 	return models.CreatedPrescription{
 		Id: int(res.Id),
 		DoctorID:   int(res.DoctorId),
-		PatientID:  int(res.PatientId),
+		PatientID:  res.PatientId,
 		BookingID: int(res.BookingId),
 		Medicine:   res.Medicine,
 		Dosage:     res.Dosage,

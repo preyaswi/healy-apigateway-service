@@ -6,14 +6,14 @@ type GoogleUserInfo struct {
 	Name  string `json:"name"`
 }
 type GoogleSignupdetailResponse struct {
-	Id       uint
+	Id       string
 	GoogleId string
 	FullName string
 	Email    string
 }
 
 type SignupdetailResponse struct {
-	Id            uint
+	Id            string
 	Fullname      string
 	Email         string
 	Gender        string

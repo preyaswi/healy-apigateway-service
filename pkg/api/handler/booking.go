@@ -21,8 +21,8 @@ func NewBookingHandler(BookingClient interfaces.AdminClient) *BookingHandler {
 	}
 }
 func (b *BookingHandler) AddToBookings(c *fiber.Ctx) error {
-	patientID := c.Locals("user_id").(int)
-	if patientID == 0 {
+	patientID := c.Locals("user_id").(string)
+	if patientID == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "missing patient ID in headers",
 		})
@@ -45,8 +45,8 @@ func (b *BookingHandler) AddToBookings(c *fiber.Ctx) error {
 
 }
 func (b *BookingHandler) CancelBookings(c *fiber.Ctx) error {
-	patientID := c.Locals("user_id").(int)
-	if patientID == 0 {
+	patientID := c.Locals("user_id").(string)
+	if patientID == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "missing patient ID in headers",
 		})
@@ -69,8 +69,13 @@ func (b *BookingHandler) CancelBookings(c *fiber.Ctx) error {
 
 }
 func (b *BookingHandler) GetBookedPatients(c *fiber.Ctx) error {
-	doctorid := c.Locals("user_id").(int)
-	patientdetails, err := b.Grpc_Client.GetPaidPatients(doctorid)
+	doctorid := c.Locals("user_id").(string)
+	doctorId,err:=strconv.Atoi(doctorid)
+	if err!=nil{
+		errs := response.ClientResponse("couldn't convert string to int", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errs)
+	}
+	patientdetails, err := b.Grpc_Client.GetPaidPatients(doctorId)
 	if err != nil {
 		errs := response.ClientResponse("couldn't fetch booked patients, please try again", nil, err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
@@ -79,13 +84,14 @@ func (b *BookingHandler) GetBookedPatients(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(success)
 }
 func (b *BookingHandler) CreatePrescription(c *fiber.Ctx) error {
-	doctorID := c.Locals("user_id").(int)
-	patientIDStr := c.Query("patient_id")
-	bookingIDStr := c.Query("booking_id")
-	patientID, err := strconv.Atoi(patientIDStr)
-	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert patient ID string to int", nil, err.Error()))
+	doctorid := c.Locals("user_id").(string)
+	doctorId,err:=strconv.Atoi(doctorid)
+	if err!=nil{
+		errs := response.ClientResponse("couldn't convert string to int", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errs)
 	}
+	patientID := c.Query("patient_id")
+	bookingIDStr := c.Query("booking_id")
 	bookingID, err := strconv.Atoi(bookingIDStr)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert booking ID string to int", nil, err.Error()))
@@ -96,7 +102,7 @@ func (b *BookingHandler) CreatePrescription(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(response.ClientResponse("Details are not in correct format", nil, err.Error()))
 	}
 
-	prescription.DoctorID = doctorID
+	prescription.DoctorID = doctorId
 	prescription.PatientID = patientID
 	prescription.BookingID = bookingID
 

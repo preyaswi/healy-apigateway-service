@@ -140,9 +140,9 @@ func (d *doctorClient) DoctorProfile(id int) (models.IndDoctorDetail, error) {
 		Rating: res.Rating,
 	}, nil
 }
-func (d *doctorClient) RateDoctor(patientid int, doctorid string, rate models.Rate) (models.Rate, error) {
+func (d *doctorClient) RateDoctor(patientid string, doctorid string, rate models.Rate) (models.Rate, error) {
 	rated, err := d.Client.RateDoctor(context.Background(), &pb.RateDoctorReq{
-		Patientid: uint64(patientid),
+		Patientid: patientid,
 		DoctorId:  doctorid,
 		Rate:      &pb.Rate{Rate: uint32(rate.Rate)},
 	})
