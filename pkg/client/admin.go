@@ -185,3 +185,14 @@ func (ad *adminClient)GetDoctorAvailability(doctorid int,date string)([]models.G
 
     return availabilities, nil
 }
+func (ad *adminClient)BookSlot(patientid string,bookingid int,slotid int)(error)  {
+	_,err:=ad.Client.BookSlot(context.Background(),&pb.BookSlotreq{
+		BookingId: uint32(bookingid),
+		PatientId: patientid,
+		SlotId: uint32(slotid),
+	})
+	if err!=nil{
+		return err
+	}
+	return nil
+}

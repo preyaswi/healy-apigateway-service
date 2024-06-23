@@ -122,8 +122,8 @@ func (b *BookingHandler) CreatePrescription(c *fiber.Ctx) error {
 }
 func (b *BookingHandler) SetDoctorAvailability(c *fiber.Ctx) error {
 	doctorid := c.Locals("user_id").(string)
-	doctorId,err:=strconv.Atoi(doctorid)
-	if err!=nil{
+	doctorId, err := strconv.Atoi(doctorid)
+	if err != nil {
 		errorRes := response.ClientResponse("couldn't convert string to int", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errorRes)
 	}
@@ -131,8 +131,8 @@ func (b *BookingHandler) SetDoctorAvailability(c *fiber.Ctx) error {
 	if err := c.BodyParser(&setreq); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(response.ClientResponse("Details are not in correct format", nil, err.Error()))
 	}
-	res,err:=b.Grpc_Client.SetDoctorAvailability(setreq, doctorId)
-	if err!=nil{
+	res, err := b.Grpc_Client.SetDoctorAvailability(setreq, doctorId)
+	if err != nil {
 		errorRes := response.ClientResponse("failed to set availability", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errorRes)
 	}
@@ -142,17 +142,37 @@ func (b *BookingHandler) SetDoctorAvailability(c *fiber.Ctx) error {
 }
 func (b *BookingHandler) GetDoctorSlotAvailability(c *fiber.Ctx) error {
 	fmt.Println("fghjkl")
-	doctorId,err:=strconv.Atoi(c.Query("doctor_id"))
-	if err!=nil{
-		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert doctor ID string to int", nil, err.Error())) 
+	doctorId, err := strconv.Atoi(c.Query("doctor_id"))
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert doctor ID string to int", nil, err.Error()))
 	}
-	date:=c.Query("date")
-	fmt.Println("hello",date)
-	res,err:=b.Grpc_Client.GetDoctorAvailability(doctorId,date)
-	if err!=nil{
+	date := c.Query("date")
+	fmt.Println("hello", date)
+	res, err := b.Grpc_Client.GetDoctorAvailability(doctorId, date)
+	if err != nil {
 		errorRes := response.ClientResponse("failed to get doctor's availability", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errorRes)
 	}
 	successRes := response.ClientResponse("listed doctor's availabile slots", res, nil)
+	return c.Status(200).JSON(successRes)
+}
+func (b *BookingHandler) BookSlot(c *fiber.Ctx) error {
+	patientid:=c.Locals("user_id").(string)
+	bookingIDStr := c.Query("booking_id")
+	bookingID, err := strconv.Atoi(bookingIDStr)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert doctor ID string to int", nil, err.Error()))
+	}
+	slotIDStr := c.Query("slot_id")
+	slotID, err := strconv.Atoi(slotIDStr)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert doctor ID string to int", nil, err.Error()))
+	}
+	err=b.Grpc_Client.BookSlot(patientid, bookingID,slotID)
+	if err!=nil{
+		errorRes := response.ClientResponse("couldn't book the slot", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errorRes)
+	}
+	successRes := response.ClientResponse("slot booked for the bookingid", nil, nil)
 	return c.Status(200).JSON(successRes)
 }

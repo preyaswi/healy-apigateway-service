@@ -30,4 +30,5 @@ func PatientRoutes(route *fiber.App, patientHandler *handler.PatientHandler, doc
     booking := patient.Group("/booking")
     booking.Post("", middleware.LoggingMiddleware(bookingHandler.AddToBookings))
     booking.Delete("", middleware.LoggingMiddleware(bookingHandler.CancelBookings))
+    booking.Post("/bookslot",middleware.LoggingMiddleware(bookingHandler.BookSlot))
 }

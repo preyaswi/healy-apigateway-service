@@ -16,5 +16,6 @@ type AdminClient interface {
 
 	SetDoctorAvailability(setreq models.SetAvailability,doctorId int)(string,error)
 	GetDoctorAvailability(doctorid int,date string)([]models.GetAvailability,error)
+	BookSlot(patientid string, bookingid int,slotid int)(error)
 
 }
