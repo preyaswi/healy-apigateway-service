@@ -166,3 +166,22 @@ func (ad *adminClient) SetDoctorAvailability(setreq models.SetAvailability, doct
 	}
 	return res.Status, nil
 }
+func (ad *adminClient)GetDoctorAvailability(doctorid int,date string)([]models.GetAvailability,error)  {
+	res,err:=ad.Client.GetDoctorAvailability(context.Background(),&pb.GetDoctorAvailabilityRequest{
+		DoctorId: uint32(doctorid),
+		Date: date,
+	})
+	if err!=nil{
+		return []models.GetAvailability{},err
+	}
+	var availabilities []models.GetAvailability
+    for _, slot := range res.Slots {
+        availabilities = append(availabilities, models.GetAvailability{
+            Slot_id:   slot.SlotId,
+            Time:      slot.Time,
+            Is_booked: slot.IsBooked,
+        })
+    }
+
+    return availabilities, nil
+}

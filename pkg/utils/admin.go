@@ -42,3 +42,8 @@ type SetAvailability struct{
 	StartTime  string `json:"starttime"` // e.g., "09:00"
 	EndTime string `json:"endtime"`  // e.g., "17:00"
 }
+type GetAvailability struct{
+	 Slot_id uint32
+     Time string // e.g., "09:00-09:30"
+     Is_booked bool
+}
