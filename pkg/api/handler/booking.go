@@ -70,8 +70,8 @@ func (b *BookingHandler) CancelBookings(c *fiber.Ctx) error {
 }
 func (b *BookingHandler) GetBookedPatients(c *fiber.Ctx) error {
 	doctorid := c.Locals("user_id").(string)
-	doctorId,err:=strconv.Atoi(doctorid)
-	if err!=nil{
+	doctorId, err := strconv.Atoi(doctorid)
+	if err != nil {
 		errs := response.ClientResponse("couldn't convert string to int", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
 	}
@@ -85,8 +85,8 @@ func (b *BookingHandler) GetBookedPatients(c *fiber.Ctx) error {
 }
 func (b *BookingHandler) CreatePrescription(c *fiber.Ctx) error {
 	doctorid := c.Locals("user_id").(string)
-	doctorId,err:=strconv.Atoi(doctorid)
-	if err!=nil{
+	doctorId, err := strconv.Atoi(doctorid)
+	if err != nil {
 		errs := response.ClientResponse("couldn't convert string to int", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
 	}
@@ -116,6 +116,26 @@ func (b *BookingHandler) CreatePrescription(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(errorRes)
 	}
 	successRes := response.ClientResponse("prescription created", createdPrescription, nil)
+	return c.Status(200).JSON(successRes)
+
+}
+func (b *BookingHandler) SetDoctorAvailability(c *fiber.Ctx) error {
+	doctorid := c.Locals("user_id").(string)
+	doctorId,err:=strconv.Atoi(doctorid)
+	if err!=nil{
+		errorRes := response.ClientResponse("couldn't convert string to int", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errorRes)
+	}
+	var setreq models.SetAvailability
+	if err := c.BodyParser(&setreq); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(response.ClientResponse("Details are not in correct format", nil, err.Error()))
+	}
+	res,err:=b.Grpc_Client.SetDoctorAvailability(setreq, doctorId)
+	if err!=nil{
+		errorRes := response.ClientResponse("failed to set availability", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errorRes)
+	}
+	successRes := response.ClientResponse("prescription created", res, nil)
 	return c.Status(200).JSON(successRes)
 
 }

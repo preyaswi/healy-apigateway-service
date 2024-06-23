@@ -16,6 +16,7 @@ func DoctorRoutes(route *fiber.App, doctorHandler *handler.DoctorHandler, patien
 		profile := doctor.Group("/profile")
 		profile.Get("", middleware.LoggingMiddleware(doctorHandler.DoctorProfile))
 		profile.Put("", middleware.LoggingMiddleware(doctorHandler.UpdateDoctorProfile))
+		profile.Post("/availability",bookingHandler.SetDoctorAvailability)
 	}
 	patient := doctor.Group("/patient")
 	{

@@ -14,4 +14,6 @@ type AdminClient interface {
 	GetPaidPatients(doctor_id int)([]models.Patient,error)
 	CreatePrescription(prescription models.PrescriptionRequest) (models.CreatedPrescription, error)
 
+	SetDoctorAvailability(setreq models.SetAvailability,doctorId int)(string,error)
+
 }

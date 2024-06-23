@@ -81,7 +81,7 @@ func (ad *adminClient) AddToBookings(patientid string, doctorid int) error {
 	return nil
 }
 func (ad *adminClient) CancelBookings(patientid string, bookingid int) error {
-	_, err := ad.Client.CancelBookings(context.Background(), &pb.Canbookingreq{PatientId:patientid, BookingId: int32(bookingid)})
+	_, err := ad.Client.CancelBookings(context.Background(), &pb.Canbookingreq{PatientId: patientid, BookingId: int32(bookingid)})
 	if err != nil {
 		return err
 	}
@@ -120,12 +120,12 @@ func (ad *adminClient) GetPaidPatients(doctor_id int) ([]models.Patient, error) 
 	patientsDetails := make([]models.Patient, len(res.BookedPatients))
 	for i, bookedPatient := range res.BookedPatients {
 		patientsDetails[i] = models.Patient{
-			BookingId: uint(bookedPatient.BookingId),
+			BookingId:     uint(bookedPatient.BookingId),
 			PaymentStatus: bookedPatient.PaymentStatus,
-			PatientId: uint(bookedPatient.PatientDetail.Id),
-			Fullname:  bookedPatient.PatientDetail.Fullname,
-			Email:     bookedPatient.PatientDetail.Email,
-			Gender:    bookedPatient.PatientDetail.Gender,
+			PatientId:     uint(bookedPatient.PatientDetail.Id),
+			Fullname:      bookedPatient.PatientDetail.Fullname,
+			Email:         bookedPatient.PatientDetail.Email,
+			Gender:        bookedPatient.PatientDetail.Gender,
 			Contactnumber: bookedPatient.PatientDetail.Contactnumber,
 		}
 	}
@@ -134,23 +134,35 @@ func (ad *adminClient) GetPaidPatients(doctor_id int) ([]models.Patient, error) 
 func (ad *adminClient) CreatePrescription(prescription models.PrescriptionRequest) (models.CreatedPrescription, error) {
 	res, err := ad.Client.CreatePrescription(context.Background(), &pb.CreatePrescriptionRequest{
 		BookingId: uint32(prescription.BookingID),
-		DoctorId: uint32(prescription.DoctorID),
+		DoctorId:  uint32(prescription.DoctorID),
 		PatientId: prescription.PatientID,
-		Medicine:   prescription.Medicine,
-		Dosage:     prescription.Dosage,
-		Notes:      prescription.Notes,
+		Medicine:  prescription.Medicine,
+		Dosage:    prescription.Dosage,
+		Notes:     prescription.Notes,
 	})
 	if err != nil {
 		return models.CreatedPrescription{}, err
 	}
 	return models.CreatedPrescription{
-		Id: int(res.Id),
-		DoctorID:   int(res.DoctorId),
-		PatientID:  res.PatientId,
+		Id:        int(res.Id),
+		DoctorID:  int(res.DoctorId),
+		PatientID: res.PatientId,
 		BookingID: int(res.BookingId),
-		Medicine:   res.Medicine,
-		Dosage:     res.Dosage,
-		Notes:      res.Notes,
+		Medicine:  res.Medicine,
+		Dosage:    res.Dosage,
+		Notes:     res.Notes,
 	}, nil
 
+}
+func (ad *adminClient) SetDoctorAvailability(setreq models.SetAvailability, doctorId int) (string, error) {
+	res, err := ad.Client.SetDoctorAvailability(context.Background(), &pb.SetDoctorAvailabilityRequest{
+		DoctorId:  uint32(doctorId),
+		Date:      setreq.Date,
+		StartTime: setreq.StartTime,
+		EndTime:   setreq.EndTime,
+	})
+	if err != nil {
+		return "", err
+	}
+	return res.Status, nil
 }

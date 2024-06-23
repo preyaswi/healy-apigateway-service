@@ -37,3 +37,8 @@ type Payment struct{
 	Fees uint64
 	PaymentStatus string
 }
+type SetAvailability struct{
+    Date string `json:"date"`// e.g., "2024-06-20"
+	StartTime  string `json:"starttime"` // e.g., "09:00"
+	EndTime string `json:"endtime"`  // e.g., "17:00"
+}
