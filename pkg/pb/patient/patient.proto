@@ -15,6 +15,9 @@ message GoogleSignInRequest{
 	string google_id = 1;
     string email = 2;
     string name = 3;
+	string AccessToken=4;
+	string RefreshToken=5;
+	string tokenexpiry=6;
 }
 message GoogleSignInResponse{
 string id=1;

@@ -4,6 +4,9 @@ type GoogleUserInfo struct {
 	ID    string `json:"id"` // Google's unique user ID
 	Email string `json:"email"`
 	Name  string `json:"name"`
+	AccessToken  string   `json:"accesstoken"`
+    RefreshToken string   `json:"refreshtoken"`
+    TokenExpiry string `json:"tokenexpiry"`
 }
 type GoogleSignupdetailResponse struct {
 	Id       string

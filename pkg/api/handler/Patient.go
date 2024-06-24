@@ -1,13 +1,12 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"healy-apigateway/pkg/api/response"
 	interfaces "healy-apigateway/pkg/client/interface"
 	"healy-apigateway/pkg/config"
 	models "healy-apigateway/pkg/utils"
-	"io"
+	"log"
 
 	"net/http"
 
@@ -15,6 +14,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"google.golang.org/api/calendar/v3"
 )
 
 type PatientHandler struct {
@@ -22,14 +22,15 @@ type PatientHandler struct {
 	oauthConfig *oauth2.Config
 }
 
-func NewPatientHandler(PatientClient interfaces.PatientClient,cfg config.Config) *PatientHandler {
+func NewPatientHandler(PatientClient interfaces.PatientClient, cfg config.Config) *PatientHandler {
 	return &PatientHandler{
 		Grpc_client: PatientClient,
 		oauthConfig: &oauth2.Config{
-			ClientID: cfg.GoogleClientId,
+			ClientID:     cfg.GoogleClientId,
 			ClientSecret: cfg.GoogleSecretId,
-			RedirectURL: cfg.RedirectURL,
+			RedirectURL:  cfg.RedirectURL,
 			Scopes: []string{
+				calendar.CalendarScope,
 				"https://www.googleapis.com/auth/userinfo.email",
 				"https://www.googleapis.com/auth/userinfo.profile",
 			},
@@ -39,51 +40,70 @@ func NewPatientHandler(PatientClient interfaces.PatientClient,cfg config.Config)
 }
 
 func (p *PatientHandler) GoogleLogin(c *fiber.Ctx) error {
-    url := p.oauthConfig.AuthCodeURL("state", oauth2.AccessTypeOffline)
-    return c.Redirect(url)
+	url := p.oauthConfig.AuthCodeURL("state", oauth2.AccessTypeOffline)
+	return c.Redirect(url)
 }
 func (p *PatientHandler) GoogleCallback(c *fiber.Ctx) error {
-    code := c.Query("code")
-    token, err := p.oauthConfig.Exchange(context.Background(), code)
-    if err != nil {
-        return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-            "error": "Failed to exchange token",
-        })
-    }
+	code := c.Query("code")
+	if code == "" {
+		log.Printf("No code in query parameters")
+		return c.Status(fiber.StatusBadRequest).SendString("No code in query parameters")
+	}
 
-    client := p.oauthConfig.Client(context.Background(), token)
-    resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
-    if err != nil {
-        return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-            "error": "Failed to get user info",
-        })
-    }
-    defer resp.Body.Close()
+	token, err := p.oauthConfig.Exchange(c.Context(), code)
+	if err != nil {
+		log.Printf("Failed to exchange token: %v", err)
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to exchange token")
+	}
 
-	userInfo, err := io.ReadAll(resp.Body)
-    if err != nil {
-        return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-            "error": "Failed to read user info",
-        })
-    }
+	// Retrieve user info using the token
+	client := p.oauthConfig.Client(c.Context(), token)
+	userInfoResponse, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
+	if err != nil {
+		log.Printf("Unable to retrieve user info: %v", err)
+		return c.Status(fiber.StatusInternalServerError).SendString("Unable to retrieve user info")
+	}
+	defer userInfoResponse.Body.Close()
 
-    var googleUser models.GoogleUserInfo
-    if err := json.Unmarshal(userInfo, &googleUser); err != nil {
-        errs := response.ClientResponse("failed to parse user info",nil, err.Error())
+	var userInfo struct {
+		ID            string `json:"id"`
+		Email         string `json:"email"`
+		VerifiedEmail bool   `json:"verified_email"`
+		Name          string `json:"name"`
+		GivenName     string `json:"given_name"`
+		FamilyName    string `json:"family_name"`
+		Link          string `json:"link"`
+		Picture       string `json:"picture"`
+		Locale        string `json:"locale"`
+		HD            string `json:"hd"`
+	}
+
+	if err := json.NewDecoder(userInfoResponse.Body).Decode(&userInfo); err != nil {
+		log.Printf("Unable to parse user info: %v", err)
+		return c.Status(fiber.StatusInternalServerError).SendString("Unable to parse user info")
+	}
+
+	googleID := userInfo.ID
+	googleEmail := userInfo.Email
+
+	googleUser := models.GoogleUserInfo{
+		ID:           googleID,
+		Email:        googleEmail,
+		Name:         userInfo.Name,
+		AccessToken:  token.AccessToken,
+		RefreshToken: token.RefreshToken,
+		TokenExpiry:  token.Expiry.String(),
+	}
+
+	patient, err := p.Grpc_client.GoogleSignIn(googleUser.ID, googleUser.Email, googleUser.Name, googleUser.AccessToken, googleUser.RefreshToken, googleUser.TokenExpiry)
+	if err != nil {
+		errs := response.ClientResponse("error: Failed to authenticate with patient service", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
-	
-    }
 
-    patient, err := p.Grpc_client.GoogleSignIn(googleUser.ID, googleUser.Email, googleUser.Name)
-    if err != nil {
-		errs := response.ClientResponse( "error: Failed to authenticate with patient service", nil, err.Error())
-		return c.Status(http.StatusBadRequest).JSON(errs)
-
-    }
+	}
 	success := response.ClientResponse("Patient created successfully", patient, nil)
 	return c.Status(201).JSON(success)
 }
-
 
 func (p *PatientHandler) PatientDetails(c *fiber.Ctx) error {
 

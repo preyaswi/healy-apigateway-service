@@ -25,32 +25,33 @@ func NewPatientClient(cfg config.Config) interfaces.PatientClient {
 		Client: grpcClient,
 	}
 }
-func (p *patientClient) GoogleSignIn(googleID, email, name string) (models.TokenPatient, error) {
-    res, err := p.Client.GoogleSignIn(context.Background(), &pb.GoogleSignInRequest{
-        GoogleId: googleID,
-        Email:    email,
-        Name:     name,
-    })
-    if err != nil {
-        return models.TokenPatient{}, err
-    }
+func (p *patientClient) GoogleSignIn(googleID, email, name, accesstoken, refreshtoken, tokenexpiry string) (models.TokenPatient, error) {
+	res, err := p.Client.GoogleSignIn(context.Background(), &pb.GoogleSignInRequest{
+		GoogleId: googleID,
+		Email:    email,
+		Name:     name,
+		AccessToken: accesstoken,
+		RefreshToken: refreshtoken,
+		Tokenexpiry: tokenexpiry,
+	})
+	if err != nil {
+		return models.TokenPatient{}, err
+	}
 
-    patientDetails := models.GoogleSignupdetailResponse{
-       Id: res.PatientDetails.Id,
-	  GoogleId: res.PatientDetails.GoogleId,
-	  FullName: res.PatientDetails.Fullname,
-	  Email: res.PatientDetails.Email, 
-    }
-fmt.Println(res.PatientDetails.Id,"patient id")
-    return models.TokenPatient{
-        Patient:      patientDetails,
-        AccessToken:  res.AccessToken,
-        RefreshToken: res.RefreshToken,
-    }, nil
+	patientDetails := models.GoogleSignupdetailResponse{
+		Id:       res.PatientDetails.Id,
+		GoogleId: res.PatientDetails.GoogleId,
+		FullName: res.PatientDetails.Fullname,
+		Email:    res.PatientDetails.Email,
+	}
+	return models.TokenPatient{
+		Patient:      patientDetails,
+		AccessToken:  res.AccessToken,
+		RefreshToken: res.RefreshToken,
+	}, nil
 }
 
-
-func (p *patientClient) PatientDetails(user_id string) (models.SignupdetailResponse, error){
+func (p *patientClient) PatientDetails(user_id string) (models.SignupdetailResponse, error) {
 	res, err := p.Client.IndPatientDetails(context.Background(), &pb.Idreq{UserId: user_id})
 	if err != nil {
 		return models.SignupdetailResponse{}, err
