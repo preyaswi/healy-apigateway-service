@@ -65,15 +65,12 @@ func (p *patientClient) PatientDetails(user_id string) (models.SignupdetailRespo
 	}, nil
 }
 func (p *patientClient) UpdatePatientDetails(pa models.PatientDetails, patient_id string) (models.PatientDetails, error) {
-	patient := &pb.InPatientDetails{
+	res, err := p.Client.UpdatePatientDetails(context.Background(), &pb.PatientDetails{
+		Id: patient_id,
 		Fullname:      pa.Fullname,
 		Email:         pa.Email,
 		Gender:        pa.Gender,
 		Contactnumber: pa.Contactnumber,
-	}
-	res, err := p.Client.UpdatePatientDetails(context.Background(), &pb.UpdateRequest{
-		PatientId:        patient_id,
-		InPatientDetails: patient,
 	})
 	if err != nil {
 		return models.PatientDetails{}, err

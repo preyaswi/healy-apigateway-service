@@ -139,18 +139,16 @@ func (b *BookingHandler) SetDoctorAvailability(c *fiber.Ctx) error {
 		errorRes := response.ClientResponse("failed to set availability", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errorRes)
 	}
-	successRes := response.ClientResponse("prescription created", res, nil)
+	successRes := response.ClientResponse("slot availability created created", res, nil)
 	return c.Status(200).JSON(successRes)
 
 }
 func (b *BookingHandler) GetDoctorSlotAvailability(c *fiber.Ctx) error {
-	fmt.Println("fghjkl")
 	doctorId, err := strconv.Atoi(c.Query("doctor_id"))
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert doctor ID string to int", nil, err.Error()))
 	}
 	date := c.Query("date")
-	fmt.Println("hello", date)
 	res, err := b.Grpc_Client.GetDoctorAvailability(doctorId, date)
 	if err != nil {
 		errorRes := response.ClientResponse("failed to get doctor's availability", nil, err.Error())

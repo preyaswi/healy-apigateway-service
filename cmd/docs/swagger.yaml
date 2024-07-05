@@ -1,0 +1,114 @@
+definitions:
+  models.GoogleUserInfo:
+    properties:
+      accesstoken:
+        type: string
+      email:
+        type: string
+      id:
+        description: Google's unique user ID
+        type: string
+      name:
+        type: string
+      refreshtoken:
+        type: string
+      tokenexpiry:
+        type: string
+    type: object
+  response.Response:
+    properties:
+      data:
+        description: |-
+          The response data
+          example: {"key": "value"}
+      error:
+        description: |-
+          The error information, if any
+          example: "Error description"
+      message:
+        description: |-
+          The response message
+          example: "Request was successful"
+        type: string
+    type: object
+info:
+  contact:
+    email: support@healy-medicare.com
+    name: API Support
+  description: This is the API documentation for the Healy Medicare application.
+  title: Healy Medicare API
+  version: 1.0.0
+paths:
+  /google/redirect:
+    get:
+      consumes:
+      - application/json
+      description: Handles the callback from Google OAuth2 login
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.GoogleUserInfo'
+        "400":
+          description: No code in query parameters
+          schema:
+            type: string
+        "500":
+          description: Failed to exchange token
+          schema:
+            type: string
+      security:
+      - None: []
+      summary: Handle Google OAuth2 callback
+      tags:
+      - Patients
+  /patient/login:
+    get:
+      consumes:
+      - application/json
+      description: Redirects the user to Google's OAuth2 login page
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Redirecting to Google login
+          schema:
+            type: string
+      security:
+      - None: []
+      summary: Redirect to Google OAuth2 login
+      tags:
+      - Patients
+  /patient/profile:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve details of a specific patient
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get patient details
+      tags:
+      - Patient Profile
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

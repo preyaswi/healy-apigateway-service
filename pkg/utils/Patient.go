@@ -27,12 +27,12 @@ type TokenPatient struct {
 	AccessToken  string
 	RefreshToken string
 }
-
+// @Schema PatientDetails
 type PatientDetails struct {
-	Fullname      string
-	Email         string
-	Gender        string
-	Contactnumber string
+	Fullname      string `json:"fullname"`
+	Email         string `json:"email"`
+	Gender        string`json:"gender"`
+	Contactnumber string`json:"contactnumber"`
 }
 
 type Patient struct {

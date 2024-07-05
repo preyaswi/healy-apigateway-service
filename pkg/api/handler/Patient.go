@@ -39,10 +39,30 @@ func NewPatientHandler(PatientClient interfaces.PatientClient, cfg config.Config
 	}
 }
 
+// GoogleLogin godoc
+// @Summary Redirect to Google OAuth2 login
+// @Description Redirects the user to Google's OAuth2 login page
+// @Tags Patients
+// @Accept json
+// @Produce json
+// @Success 302 {string} string "Redirecting to Google login"
+// @Router /patient/login [get]
+// @Security None
 func (p *PatientHandler) GoogleLogin(c *fiber.Ctx) error {
 	url := p.oauthConfig.AuthCodeURL("state", oauth2.AccessTypeOffline)
 	return c.Redirect(url)
 }
+// GoogleCallback godoc
+// @Summary Handle Google OAuth2 callback
+// @Description Handles the callback from Google OAuth2 login
+// @Tags Patients
+// @Accept json
+// @Produce json
+// @Success 201 {object} models.GoogleUserInfo
+// @Failure 400 {string} string "No code in query parameters"
+// @Failure 500 {string} string "Failed to exchange token"
+// @Router /google/redirect [get]
+// @Security None
 func (p *PatientHandler) GoogleCallback(c *fiber.Ctx) error {
 	code := c.Query("code")
 	if code == "" {
@@ -104,7 +124,16 @@ func (p *PatientHandler) GoogleCallback(c *fiber.Ctx) error {
 	success := response.ClientResponse("Patient created successfully", patient, nil)
 	return c.Status(201).JSON(success)
 }
-
+// @Summary Get patient details
+// @Description Retrieve details of a specific patient
+// @Tags Patient Profile
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /patient/profile [get]
 func (p *PatientHandler) PatientDetails(c *fiber.Ctx) error {
 
 	patientID := c.Locals("user_id").(string)

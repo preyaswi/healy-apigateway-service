@@ -45,6 +45,7 @@ type IndDoctorDetail struct {
 	Fees              int64
 	Rating            int32
 }
+// @Schema Rate
 type Rate struct {
 	Rate uint `json:"rate" binding:"required" validate:"required,min=0,max=5" `
 }

@@ -31,7 +31,7 @@ const (
 type PatientClient interface {
 	GoogleSignIn(ctx context.Context, in *GoogleSignInRequest, opts ...grpc.CallOption) (*PatientSignUpResponse, error)
 	IndPatientDetails(ctx context.Context, in *Idreq, opts ...grpc.CallOption) (*PatientDetails, error)
-	UpdatePatientDetails(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*InPatientDetails, error)
+	UpdatePatientDetails(ctx context.Context, in *PatientDetails, opts ...grpc.CallOption) (*PatientDetails, error)
 	ListPatients(ctx context.Context, in *Req, opts ...grpc.CallOption) (*Listpares, error)
 }
 
@@ -61,8 +61,8 @@ func (c *patientClient) IndPatientDetails(ctx context.Context, in *Idreq, opts .
 	return out, nil
 }
 
-func (c *patientClient) UpdatePatientDetails(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*InPatientDetails, error) {
-	out := new(InPatientDetails)
+func (c *patientClient) UpdatePatientDetails(ctx context.Context, in *PatientDetails, opts ...grpc.CallOption) (*PatientDetails, error) {
+	out := new(PatientDetails)
 	err := c.cc.Invoke(ctx, Patient_UpdatePatientDetails_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -85,7 +85,7 @@ func (c *patientClient) ListPatients(ctx context.Context, in *Req, opts ...grpc.
 type PatientServer interface {
 	GoogleSignIn(context.Context, *GoogleSignInRequest) (*PatientSignUpResponse, error)
 	IndPatientDetails(context.Context, *Idreq) (*PatientDetails, error)
-	UpdatePatientDetails(context.Context, *UpdateRequest) (*InPatientDetails, error)
+	UpdatePatientDetails(context.Context, *PatientDetails) (*PatientDetails, error)
 	ListPatients(context.Context, *Req) (*Listpares, error)
 	mustEmbedUnimplementedPatientServer()
 }
@@ -100,7 +100,7 @@ func (UnimplementedPatientServer) GoogleSignIn(context.Context, *GoogleSignInReq
 func (UnimplementedPatientServer) IndPatientDetails(context.Context, *Idreq) (*PatientDetails, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IndPatientDetails not implemented")
 }
-func (UnimplementedPatientServer) UpdatePatientDetails(context.Context, *UpdateRequest) (*InPatientDetails, error) {
+func (UnimplementedPatientServer) UpdatePatientDetails(context.Context, *PatientDetails) (*PatientDetails, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePatientDetails not implemented")
 }
 func (UnimplementedPatientServer) ListPatients(context.Context, *Req) (*Listpares, error) {
@@ -156,7 +156,7 @@ func _Patient_IndPatientDetails_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _Patient_UpdatePatientDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateRequest)
+	in := new(PatientDetails)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -168,7 +168,7 @@ func _Patient_UpdatePatientDetails_Handler(srv interface{}, ctx context.Context,
 		FullMethod: Patient_UpdatePatientDetails_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PatientServer).UpdatePatientDetails(ctx, req.(*UpdateRequest))
+		return srv.(PatientServer).UpdatePatientDetails(ctx, req.(*PatientDetails))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -5,7 +5,7 @@ option go_package="./pkg/pb/patient";
 service Patient{
 	rpc GoogleSignIn(GoogleSignInRequest) returns (PatientSignUpResponse){};
 	rpc IndPatientDetails(idreq)returns(PatientDetails){};
-	rpc UpdatePatientDetails(UpdateRequest)returns(InPatientDetails){};
+	rpc UpdatePatientDetails(PatientDetails)returns(PatientDetails){};
 
     rpc ListPatients(req)returns(listpares){};
 
@@ -57,17 +57,6 @@ message PatientLoginResponse{
 message idreq{
 	string user_id=1;
 }
-message InPatientDetails{
-	string fullname=1;
-    string email=2;
-	string gender=3;
-    string contactnumber=4;
-}
-message UpdateRequest{
-	string patient_id=1;
-	InPatientDetails InPatientDetails=2;
-}
-
 message listpares{
 	repeated PatientDetails pa=1;
 }
