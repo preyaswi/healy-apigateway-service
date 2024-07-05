@@ -8,7 +8,6 @@ import (
 	"healy-apigateway/pkg/logging"
 	models "healy-apigateway/pkg/utils"
 	"net/http"
-	"strconv"
 	"sync"
 
 	"github.com/gofiber/fiber/v2"
@@ -30,7 +29,7 @@ var User = make(map[string]*websocket.Conn)
 // WebSocket
 func (ch *ChatHandler) FriendMessage(c *websocket.Conn) {
 	var mu sync.Mutex
-	userID := strconv.Itoa(c.Locals("user_id").(int))
+	userID := c.Locals("user_id").(string)
 	mu.Lock()
 	defer mu.Unlock()
 	defer delete(User, userID)
@@ -71,7 +70,7 @@ func (ch *ChatHandler) GetChat(c *fiber.Ctx) error {
 	// Convert offset and limit to appropriate types if needed
 	// ...
 
-	userID := strconv.Itoa(c.Locals("user_id").(int))
+	userID := c.Locals("user_id").(string)
 
 	// Prepare the chat request object
 	chatRequest := models.ChatRequest{

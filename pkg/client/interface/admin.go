@@ -18,4 +18,7 @@ type AdminClient interface {
 	GetDoctorAvailability(doctorid int,date string)([]models.GetAvailability,error)
 	BookSlot(patientid string, bookingid int,slotid int)(error)
 
+	BookDoctor(patientid string,slotid int) (models.CombinedBookingDetails, string, error)
+	VerifyandCalenderCreation(bookingId int,paymentid,razorid string)error
+	
 }

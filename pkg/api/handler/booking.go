@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"healy-apigateway/pkg/api/response"
 	interfaces "healy-apigateway/pkg/client/interface"
+	"healy-apigateway/pkg/logging"
 	models "healy-apigateway/pkg/utils"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
 )
 
 type BookingHandler struct {
@@ -157,7 +160,7 @@ func (b *BookingHandler) GetDoctorSlotAvailability(c *fiber.Ctx) error {
 	return c.Status(200).JSON(successRes)
 }
 func (b *BookingHandler) BookSlot(c *fiber.Ctx) error {
-	patientid:=c.Locals("user_id").(string)
+	patientid := c.Locals("user_id").(string)
 	bookingIDStr := c.Query("booking_id")
 	bookingID, err := strconv.Atoi(bookingIDStr)
 	if err != nil {
@@ -168,11 +171,73 @@ func (b *BookingHandler) BookSlot(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert doctor ID string to int", nil, err.Error()))
 	}
-	err=b.Grpc_Client.BookSlot(patientid, bookingID,slotID)
-	if err!=nil{
+	err = b.Grpc_Client.BookSlot(patientid, bookingID, slotID)
+	if err != nil {
 		errorRes := response.ClientResponse("couldn't book the slot", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errorRes)
 	}
 	successRes := response.ClientResponse("slot booked for the bookingid", nil, nil)
 	return c.Status(200).JSON(successRes)
+}
+func (b *BookingHandler) BookDoctor(c *fiber.Ctx) error {
+	slotIdStr := c.Query("slot_id")
+	slotID, err := strconv.Atoi(slotIdStr)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert slot ID string to int", nil, err.Error()))
+	}
+
+	patientId := c.Query("patient_id")
+	bookingdetails, razorId, err := b.Grpc_Client.BookDoctor(patientId, slotID)
+	if err != nil {
+		errorRes := response.ClientResponse("Couldn't book Doctor", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errorRes)
+	}
+	fmt.Println(bookingdetails,"paymentdetails")
+	fmt.Println(razorId,"razorid")
+	return c.Status(fiber.StatusOK).Render("index", fiber.Map{
+		"final_price": bookingdetails.Fees * 100,
+		"razor_id":    razorId,
+		"user_id":     bookingdetails.PatientId,
+		"order_id":    bookingdetails.BookingId,
+		"user_email":  bookingdetails.DoctorEmail,
+		"total":       int(bookingdetails.Fees),
+	})
+}
+
+func (b *BookingHandler) VerifyandCalenderCreation(c *fiber.Ctx) error {
+	logger := logging.Logger().WithField("function", "VerifyandCalenderCreation")
+	logger.Info("Payment success endpoint hit")
+
+	bookingIdStr := c.Query("booking_id")
+	paymentId := c.Query("payment_id")
+	razorId := c.Query("razor_id")
+
+	logger = logger.WithFields(logrus.Fields{
+		"booking_id": bookingIdStr,
+		"payment_id": paymentId,
+		"razor_id":   razorId,
+	})
+	logger.Info("Received payment verification request")
+
+	bookingId, err := strconv.Atoi(bookingIdStr)
+	if err != nil {
+		logger.WithError(err).Error("Failed to convert booking ID to int")
+		return c.Status(http.StatusBadRequest).JSON(response.ClientResponse("Invalid booking ID", nil, "Booking ID must be a valid integer"))
+	}
+
+	logger.Info("Calling gRPC VerifyandCalenderCreation")
+	err = b.Grpc_Client.VerifyandCalenderCreation(bookingId, paymentId, razorId)
+	if err != nil {
+		logger.WithError(err).Error("gRPC VerifyandCalenderCreation failed")
+		fmt.Println("gRPC error:", err.Error()) // Print the full error message
+
+		// Determine if this is a client error or a server error
+		if strings.Contains(err.Error(), "not found") || strings.Contains(err.Error(), "invalid") {
+			return c.Status(http.StatusBadRequest).JSON(response.ClientResponse("Verification failed", nil, err.Error()))
+		}
+		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Internal server error", nil, "An unexpected error occurred"))
+	}
+
+	logger.Info("Slot booked successfully")
+	return c.Status(http.StatusOK).JSON(response.ClientResponse("Slot booked on the calendar", nil, nil))
 }

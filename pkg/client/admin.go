@@ -94,7 +94,7 @@ func (ad *adminClient) MakePaymentRazorpay(bookingid int) (models.CombinedBookin
 	}
 	paymentdetail := models.CombinedBookingDetails{
 		BookingId:     uint(res.PaymentDetails.BookingId),
-		PatientId:     uint(res.PaymentDetails.PatientId),
+		PatientId:     res.PaymentDetails.PatientId,
 		DoctorId:      uint(res.PaymentDetails.DoctorId),
 		DoctorName:    res.PaymentDetails.DoctorName,
 		DoctorEmail:   res.PaymentDetails.DoctorEmail,
@@ -195,4 +195,36 @@ func (ad *adminClient)BookSlot(patientid string,bookingid int,slotid int)(error)
 		return err
 	}
 	return nil
+}
+func (ad *adminClient)BookDoctor(patientid string,slotid int) (models.CombinedBookingDetails, string, error)  {
+	res,err:=ad.Client.BookDoctor(context.Background(),&pb.BookDoctorreq{
+		PatientId: patientid,
+		SlotId: uint32(slotid),
+	})
+	if err != nil {
+		return models.CombinedBookingDetails{}, "", err
+	}
+	paymentdetail := models.CombinedBookingDetails{
+		BookingId:     uint(res.PaymentDetails.BookingId),
+		PatientId:     res.PaymentDetails.PatientId,
+		DoctorId:      uint(res.PaymentDetails.DoctorId),
+		DoctorName:    res.PaymentDetails.DoctorName,
+		DoctorEmail:   res.PaymentDetails.DoctorEmail,
+		Fees:          res.PaymentDetails.Fees,
+		PaymentStatus: res.PaymentDetails.PaymentStatus,
+	}
+	razor_id := res.Razorid
+	return paymentdetail, razor_id, nil
+}
+func (ad *adminClient)VerifyandCalenderCreation(bookingId int,paymentid,razorid string)error  {
+	_,err:=ad.Client.VerifyandCalenderCreation(context.Background(),&pb.VerifyPaymentandcalenderreq{
+		BookingId: uint32(bookingId),
+		PaymentId: paymentid,
+		RazorId: razorid,
+	})
+	if err!=nil{
+		return err
+	}
+	return nil
+
 }
