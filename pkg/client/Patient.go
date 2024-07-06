@@ -27,12 +27,12 @@ func NewPatientClient(cfg config.Config) interfaces.PatientClient {
 }
 func (p *patientClient) GoogleSignIn(googleID, email, name, accesstoken, refreshtoken, tokenexpiry string) (models.TokenPatient, error) {
 	res, err := p.Client.GoogleSignIn(context.Background(), &pb.GoogleSignInRequest{
-		GoogleId: googleID,
-		Email:    email,
-		Name:     name,
-		AccessToken: accesstoken,
+		GoogleId:     googleID,
+		Email:        email,
+		Name:         name,
+		AccessToken:  accesstoken,
 		RefreshToken: refreshtoken,
-		Tokenexpiry: tokenexpiry,
+		Tokenexpiry:  tokenexpiry,
 	})
 	if err != nil {
 		return models.TokenPatient{}, err
@@ -66,7 +66,7 @@ func (p *patientClient) PatientDetails(user_id string) (models.SignupdetailRespo
 }
 func (p *patientClient) UpdatePatientDetails(pa models.PatientDetails, patient_id string) (models.PatientDetails, error) {
 	res, err := p.Client.UpdatePatientDetails(context.Background(), &pb.PatientDetails{
-		Id: patient_id,
+		Id:            patient_id,
 		Fullname:      pa.Fullname,
 		Email:         pa.Email,
 		Gender:        pa.Gender,

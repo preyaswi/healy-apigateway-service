@@ -73,16 +73,16 @@ func (d *DoctorHandler) IndividualDoctor(c *fiber.Ctx) error {
 	doctorID := c.Params("doctor_id")
 	doctor, err := d.Grpc_Client.IndividualDoctor(doctorID)
 	if err != nil {
-        errorRes := response.ClientResponse("couldn't fetch doctors data", nil, err.Error())
-        return c.Status(http.StatusBadRequest).JSON(errorRes)
-    }
+		errorRes := response.ClientResponse("couldn't fetch doctors data", nil, err.Error())
+		return c.Status(http.StatusBadRequest).JSON(errorRes)
+	}
 	success := response.ClientResponse("returned individual doctor data", doctor, nil)
 	return c.Status(201).JSON(success)
 }
 func (d *DoctorHandler) DoctorProfile(c *fiber.Ctx) error {
 	userId := c.Locals("user_id").(string)
-	userID,err:=strconv.Atoi(userId)
-	if err!=nil{
+	userID, err := strconv.Atoi(userId)
+	if err != nil {
 		errs := response.ClientResponse("couldn't convert string to int", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
 	}
@@ -120,8 +120,8 @@ func (d *DoctorHandler) RateDoctor(c *fiber.Ctx) error {
 }
 func (d *DoctorHandler) UpdateDoctorProfile(c *fiber.Ctx) error {
 	doctorid := c.Locals("user_id").(string)
-	doctorId,err:=strconv.Atoi(doctorid)
-	if err!=nil{
+	doctorId, err := strconv.Atoi(doctorid)
+	if err != nil {
 		errs := response.ClientResponse("couldn't convert string to int", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
 	}

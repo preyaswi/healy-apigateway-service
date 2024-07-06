@@ -10,7 +10,7 @@ import (
 func PatientRoutes(route *fiber.App, patientHandler *handler.PatientHandler, doctorHandler *handler.DoctorHandler, adminHandler *handler.AdminHandler, bookingHandler *handler.BookingHandler, paymentHandler *handler.PaymentHandler) {
 	route.Get("/google/redirect", middleware.LoggingMiddleware(patientHandler.GoogleCallback))
 	route.Get("/payment_success", middleware.LoggingMiddleware(bookingHandler.VerifyandCalenderCreation))
-	
+
 	patient := route.Group("/patient")
 	patient.Get("login", middleware.LoggingMiddleware(patientHandler.GoogleLogin))
 	// patient.Get("/payment", middleware.LoggingMiddleware(paymentHandler.MakePaymentRazorpay))

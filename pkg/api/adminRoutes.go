@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func AdminRoutes(route *fiber.App, adminHandler *handler.AdminHandler,patientHandler *handler.PatientHandler,doctorHandler *handler.DoctorHandler) {
+func AdminRoutes(route *fiber.App, adminHandler *handler.AdminHandler, patientHandler *handler.PatientHandler, doctorHandler *handler.DoctorHandler) {
 	admin := route.Group("/admin")
 	admin.Post("/signup", middleware.LoggingMiddleware(adminHandler.AdminSignUp))
 	admin.Post("/login", middleware.LoggingMiddleware(adminHandler.LoginHandler))

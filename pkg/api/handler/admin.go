@@ -15,10 +15,10 @@ type AdminHandler struct {
 	DoctorClient interfaces.DoctorClient
 }
 
-func NewAdminHandler(adminClient interfaces.AdminClient,doctorClient interfaces.DoctorClient) *AdminHandler {
+func NewAdminHandler(adminClient interfaces.AdminClient, doctorClient interfaces.DoctorClient) *AdminHandler {
 	return &AdminHandler{
-		GRPC_Client: adminClient,
-		DoctorClient: doctorClient ,
+		GRPC_Client:  adminClient,
+		DoctorClient: doctorClient,
 	}
 }
 
@@ -59,5 +59,3 @@ func (ad *AdminHandler) AdminSignUp(c *fiber.Ctx) error {
 	success := response.ClientResponse("Admin created successfully", admin, nil)
 	return c.Status(http.StatusOK).JSON(success)
 }
-
-

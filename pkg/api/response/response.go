@@ -1,4 +1,5 @@
 package response
+
 // Response is a model for API responses
 // swagger:model Response
 type Response struct {
@@ -12,12 +13,13 @@ type Response struct {
 	// example: "Error description"
 	Error interface{} `json:"error"`
 }
+
 func ClientResponse(message string, data interface{}, err interface{}) Response {
 
 	return Response{
-		Message:    message,
-		Data:       data,
-		Error:      err,
+		Message: message,
+		Data:    data,
+		Error:   err,
 	}
 
 }

@@ -190,8 +190,8 @@ func (b *BookingHandler) BookDoctor(c *fiber.Ctx) error {
 		errorRes := response.ClientResponse("Couldn't book Doctor", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errorRes)
 	}
-	fmt.Println(bookingdetails,"paymentdetails")
-	fmt.Println(razorId,"razorid")
+	fmt.Println(bookingdetails, "paymentdetails")
+	fmt.Println(razorId, "razorid")
 	return c.Status(fiber.StatusOK).Render("index", fiber.Map{
 		"final_price": bookingdetails.Fees * 100,
 		"razor_id":    razorId,

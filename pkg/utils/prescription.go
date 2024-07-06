@@ -8,7 +8,7 @@ type Prescription struct {
 
 type PrescriptionRequest struct {
 	DoctorID  int    `json:"doctor_id"`
-	PatientID string    `json:"patient_id"`
+	PatientID string `json:"patient_id"`
 	BookingID int    `json:"booking_id"`
 	Medicine  string `json:"medicine" `
 	Dosage    string `json:"dosage" `
@@ -17,7 +17,7 @@ type PrescriptionRequest struct {
 type CreatedPrescription struct {
 	Id        int    `json:"id"`
 	DoctorID  int    `json:"doctor_id"`
-	PatientID string    `json:"patient_id"`
+	PatientID string `json:"patient_id"`
 	BookingID int    `json:"booking_id"`
 	Medicine  string `json:"medicine" `
 	Dosage    string `json:"dosage" `

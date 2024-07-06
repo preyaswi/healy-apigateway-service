@@ -36,7 +36,7 @@ func (ad *chatClient) GetChat(userid string, req models.ChatRequest) ([]models.T
 		Limit:    req.Limit,
 	})
 	if err != nil {
-		fmt.Println(data,"hello")
+		fmt.Println(data, "hello")
 		return []models.TempMessage{}, err
 	}
 	var response []models.TempMessage

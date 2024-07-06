@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func DoctorRoutes(route *fiber.App, doctorHandler *handler.DoctorHandler, patientHandler *handler.PatientHandler,bookingHandler *handler.BookingHandler) {
+func DoctorRoutes(route *fiber.App, doctorHandler *handler.DoctorHandler, patientHandler *handler.PatientHandler, bookingHandler *handler.BookingHandler) {
 	doctor := route.Group("/doctor")
 	doctor.Post("/signup", middleware.LoggingMiddleware(doctorHandler.DoctorSignUp))
 	doctor.Post("/login", middleware.LoggingMiddleware(doctorHandler.DoctorLogin))
@@ -16,7 +16,7 @@ func DoctorRoutes(route *fiber.App, doctorHandler *handler.DoctorHandler, patien
 		profile := doctor.Group("/profile")
 		profile.Get("", middleware.LoggingMiddleware(doctorHandler.DoctorProfile))
 		profile.Put("", middleware.LoggingMiddleware(doctorHandler.UpdateDoctorProfile))
-		profile.Post("/availability",bookingHandler.SetDoctorAvailability)
+		profile.Post("/availability", bookingHandler.SetDoctorAvailability)
 	}
 	patient := doctor.Group("/patient")
 	{

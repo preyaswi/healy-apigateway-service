@@ -1,7 +1,6 @@
 package handler
 
 import (
-
 	"healy-apigateway/pkg/api/response"
 	interfaces "healy-apigateway/pkg/client/interface"
 	"net/http"
@@ -37,20 +36,20 @@ func (pa *PaymentHandler) MakePaymentRazorpay(c *fiber.Ctx) error {
 		"razor_id":    razorId,
 		"user_id":     paymentDetails.PatientId,
 		"order_id":    paymentDetails.BookingId,
-		"user_email":   paymentDetails.DoctorEmail,
+		"user_email":  paymentDetails.DoctorEmail,
 		"total":       int(paymentDetails.Fees),
 	})
 
 }
-func (pa *PaymentHandler) VerifyPayment(c *fiber.Ctx)error  {
-	bookingId,err:=strconv.Atoi(c.Query("booking_id"))
-	if err!=nil{
+func (pa *PaymentHandler) VerifyPayment(c *fiber.Ctx) error {
+	bookingId, err := strconv.Atoi(c.Query("booking_id"))
+	if err != nil {
 		errs := response.ClientResponse("cannot convert id string to int", nil, err.Error())
 		return c.Status(http.StatusInternalServerError).JSON(errs)
 	}
 
-	err=pa.Grpc_Client.VerifyPayment(bookingId)
-	if err!=nil{
+	err = pa.Grpc_Client.VerifyPayment(bookingId)
+	if err != nil {
 		errs := response.ClientResponse("couldn't update payment Details", nil, err.Error())
 		return c.Status(http.StatusInternalServerError).JSON(errs)
 	}

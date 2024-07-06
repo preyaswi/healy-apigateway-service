@@ -29,21 +29,21 @@ type TokenAdmin struct {
 	Token string
 }
 
-type Payment struct{
-	PaymentId uint
-	PatientId uint
-	DoctorId uint 
-	DoctorName string 
-	Fees uint64
+type Payment struct {
+	PaymentId     uint
+	PatientId     uint
+	DoctorId      uint
+	DoctorName    string
+	Fees          uint64
 	PaymentStatus string
 }
-type SetAvailability struct{
-    Date string `json:"date"`// e.g., "2024-06-20"
-	StartTime  string `json:"starttime"` // e.g., "09:00"
-	EndTime string `json:"endtime"`  // e.g., "17:00"
+type SetAvailability struct {
+	Date      string `json:"date"`      // e.g., "2024-06-20"
+	StartTime string `json:"starttime"` // e.g., "09:00"
+	EndTime   string `json:"endtime"`   // e.g., "17:00"
 }
-type GetAvailability struct{
-	 Slot_id uint32
-     Time string // e.g., "09:00-09:30"
-     Is_booked bool
+type GetAvailability struct {
+	Slot_id   uint32
+	Time      string // e.g., "09:00-09:30"
+	Is_booked bool
 }

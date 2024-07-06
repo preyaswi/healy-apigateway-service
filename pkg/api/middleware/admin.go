@@ -17,13 +17,13 @@ func AdminAuthMiddleware() fiber.Handler {
 		fmt.Println(tokenHeader, "this is the token header")
 
 		if tokenHeader == "" {
-			response := response.ClientResponse( "No auth header provided", nil, nil)
+			response := response.ClientResponse("No auth header provided", nil, nil)
 			return c.Status(http.StatusUnauthorized).JSON(response)
 		}
 
 		splitted := strings.Split(tokenHeader, " ")
 		if len(splitted) != 2 {
-			response := response.ClientResponse( "Invalid Token Format", nil, nil)
+			response := response.ClientResponse("Invalid Token Format", nil, nil)
 			return c.Status(http.StatusUnauthorized).JSON(response)
 		}
 

@@ -22,7 +22,7 @@ func UserAuthMiddleware() fiber.Handler {
 			}
 		}
 		userID, userEmail, err := helper.ExtractUserIDFromToken(tokenString)
-		fmt.Println(userID,"userid",userEmail,"useremail")
+		fmt.Println(userID, "userid", userEmail, "useremail")
 		if err != nil {
 			return c.Status(http.StatusUnauthorized).JSON(fiber.Map{
 				"error":   "Unauthorized",
@@ -31,9 +31,9 @@ func UserAuthMiddleware() fiber.Handler {
 		}
 		c.Locals("user_id", userID)
 		c.Locals("user_email", userEmail)
-		c.Locals("patient_id",userID)
-		c.Locals("doctor_id",userID)
-		fmt.Println(userID,"userid")
+		c.Locals("patient_id", userID)
+		c.Locals("doctor_id", userID)
+		fmt.Println(userID, "userid")
 		return c.Next()
 	}
 }

@@ -52,6 +52,7 @@ func (p *PatientHandler) GoogleLogin(c *fiber.Ctx) error {
 	url := p.oauthConfig.AuthCodeURL("state", oauth2.AccessTypeOffline)
 	return c.Redirect(url)
 }
+
 // GoogleCallback godoc
 // @Summary Handle Google OAuth2 callback
 // @Description Handles the callback from Google OAuth2 login
@@ -124,6 +125,7 @@ func (p *PatientHandler) GoogleCallback(c *fiber.Ctx) error {
 	success := response.ClientResponse("Patient created successfully", patient, nil)
 	return c.Status(201).JSON(success)
 }
+
 // @Summary Get patient details
 // @Description Retrieve details of a specific patient
 // @Tags Patient Profile
