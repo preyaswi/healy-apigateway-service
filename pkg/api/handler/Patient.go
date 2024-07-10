@@ -40,7 +40,7 @@ func NewPatientHandler(PatientClient interfaces.PatientClient, cfg config.Config
 }
 
 // GoogleLogin godoc
-// @Summary Redirect to Google OAuth2 login
+// @Summary Redirect to Google OAuth2 login //use browser
 // @Description Redirects the user to Google's OAuth2 login page
 // @Tags Patients
 // @Accept json
@@ -54,7 +54,7 @@ func (p *PatientHandler) GoogleLogin(c *fiber.Ctx) error {
 }
 
 // GoogleCallback godoc
-// @Summary Handle Google OAuth2 callback
+// @Summary Handle Google OAuth2 callback //redirect from google login
 // @Description Handles the callback from Google OAuth2 login
 // @Tags Patients
 // @Accept json
@@ -149,6 +149,17 @@ func (p *PatientHandler) PatientDetails(c *fiber.Ctx) error {
 	return c.Status(200).JSON(successRes)
 
 }
+// @Summary Update patient details
+// @Description Update the details of a patient
+// @Tags Patient Profile
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param patientDetails body models.PatientDetails true "Patient details to update"
+// @Success 200 {object} response.Response{}
+// @Failure 400 {object} response.Response{}
+// @Failure 500 {object} response.Response{}
+// @Router /patient/profile [put]
 func (p *PatientHandler) UpdatePatientDetails(c *fiber.Ctx) error {
 
 	user_id := c.Locals("user_id").(string)
@@ -173,6 +184,15 @@ func (p *PatientHandler) UpdatePatientDetails(c *fiber.Ctx) error {
 	return c.Status(200).JSON(successRes)
 
 }
+// ListPatients handles listing all patients
+// @Summary List Patients
+// @Description List all patients
+// @Tags Admin
+// @Produce application/json
+// @Success 200 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Security Bearer
+// @Router /admin/dashboard/patients [get]
 func (p *PatientHandler) ListPatients(c *fiber.Ctx) error {
 	listedPatients, err := p.Grpc_client.ListPatients()
 	if err != nil {

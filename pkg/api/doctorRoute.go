@@ -6,11 +6,13 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 )
-
+// @Summary Doctor Routes
+// @Description Group of routes for doctor operations
 func DoctorRoutes(route *fiber.App, doctorHandler *handler.DoctorHandler, patientHandler *handler.PatientHandler, bookingHandler *handler.BookingHandler) {
 	doctor := route.Group("/doctor")
 	doctor.Post("/signup", middleware.LoggingMiddleware(doctorHandler.DoctorSignUp))
 	doctor.Post("/login", middleware.LoggingMiddleware(doctorHandler.DoctorLogin))
+	
 	doctor.Use(middleware.UserAuthMiddleware())
 	{
 		profile := doctor.Group("/profile")

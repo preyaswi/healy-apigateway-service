@@ -37,6 +37,9 @@ type Payment struct {
 	Fees          uint64
 	PaymentStatus string
 }
+
+// SetAvailability model
+// @Description Set availability details
 type SetAvailability struct {
 	Date      string `json:"date"`      // e.g., "2024-06-20"
 	StartTime string `json:"starttime"` // e.g., "09:00"

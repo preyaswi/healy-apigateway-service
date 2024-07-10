@@ -15,7 +15,7 @@ type ServerHTTP struct {
 	engine *fiber.App
 }
 
-func NewServerHTTP(patientHandler *handler.PatientHandler, doctorHandler *handler.DoctorHandler, adminHandler *handler.AdminHandler, bookingHandler *handler.BookingHandler, paymentHandler *handler.PaymentHandler, chatHandler *handler.ChatHandler) *ServerHTTP {
+func NewServerHTTP(patientHandler *handler.PatientHandler, doctorHandler *handler.DoctorHandler, adminHandler *handler.AdminHandler, bookingHandler *handler.BookingHandler, chatHandler *handler.ChatHandler) *ServerHTTP {
 	engine := html.New("./template", ".html")
 	route := fiber.New(fiber.Config{
 		Views: engine,
@@ -23,7 +23,7 @@ func NewServerHTTP(patientHandler *handler.PatientHandler, doctorHandler *handle
 	route.Get("/swagger/*", swagger.HandlerDefault)
 	route.Use(logger.New())
 	DoctorRoutes(route, doctorHandler, patientHandler, bookingHandler)
-	PatientRoutes(route, patientHandler, doctorHandler, adminHandler, bookingHandler, paymentHandler)
+	PatientRoutes(route, patientHandler, doctorHandler, adminHandler, bookingHandler)
 	AdminRoutes(route, adminHandler, patientHandler, doctorHandler)
 	ChatRoute(route, chatHandler)
 	return &ServerHTTP{

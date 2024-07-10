@@ -1,5 +1,6 @@
 package models
-
+// DoctorSignUp model
+// @Description Doctor sign up details
 type DoctorSignUp struct {
 	FullName          string `json:"full_name" binding:"required" validate:"required,min=3,max=50"`
 	Email             string `json:"email"  binding:"required" validate:"required,email"`
@@ -26,10 +27,15 @@ type DoctorSignUpResponse struct {
 	AccessToken  string
 	RefreshToken string
 }
+// DoctorLogin model
+// @Description Doctor login details
 type DoctorLogin struct {
 	Email    string
 	Password string
 }
+
+// DoctorDetails model
+// @Description Doctor profile details
 type DoctorsDetails struct {
 	DoctorDetail DoctorDetail
 	Rating       int32

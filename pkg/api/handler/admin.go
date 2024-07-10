@@ -21,7 +21,15 @@ func NewAdminHandler(adminClient interfaces.AdminClient, doctorClient interfaces
 		DoctorClient: doctorClient,
 	}
 }
-
+// @Summary Admin Login
+	// @Description Admin Login endpoint
+	// @Tags Admin
+	// @Produce application/json
+	// @Param admin body models.AdminLogin true "Admin Login"
+	// @Success 200 {object} response.Response
+	// @Failure 400 {object} response.Response
+	// @Failure 500 {object} response.Response
+	// @Router /admin/login [post]
 func (ad *AdminHandler) LoginHandler(c *fiber.Ctx) error {
 	var adminDetails models.AdminLogin
 	if err := c.BodyParser(&adminDetails); err != nil {
@@ -35,14 +43,22 @@ func (ad *AdminHandler) LoginHandler(c *fiber.Ctx) error {
 
 	admin, err := ad.GRPC_Client.AdminLogin(adminDetails)
 	if err != nil {
-		errs := response.ClientResponse("Cannot authenticate user", nil, err.Error())
+		errs := response.ClientResponse("Cannot create admin", nil, err.Error())
 		return c.Status(http.StatusInternalServerError).JSON(errs)
 	}
 
 	success := response.ClientResponse("Admin authenticated successfully", admin, nil)
 	return c.Status(http.StatusOK).JSON(success)
 }
-
+// @Summary Admin SignUp
+	// @Description Admin SignUp endpoint
+	// @Tags Admin
+	// @Produce application/json
+	// @Param admin body models.AdminSignUp true "Admin SignUp"
+	// @Success 200 {object} response.Response
+	// @Failure 400 {object} response.Response
+	// @Failure 500 {object} response.Response
+	// @Router /admin/signup [post]
 func (ad *AdminHandler) AdminSignUp(c *fiber.Ctx) error {
 	var adminDetails models.AdminSignUp
 	if err := c.BodyParser(&adminDetails); err != nil {
@@ -52,7 +68,7 @@ func (ad *AdminHandler) AdminSignUp(c *fiber.Ctx) error {
 
 	admin, err := ad.GRPC_Client.AdminSignUp(adminDetails)
 	if err != nil {
-		errs := response.ClientResponse("Cannot authenticate user", nil, err.Error())
+		errs := response.ClientResponse("Cannot create admin", nil, err.Error())
 		return c.Status(http.StatusInternalServerError).JSON(errs)
 	}
 

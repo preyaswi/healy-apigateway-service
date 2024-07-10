@@ -26,7 +26,13 @@ func NewChatHandler(ChatingClient interfaces.ChatClient) *ChatHandler {
 
 var User = make(map[string]*websocket.Conn)
 
-// WebSocket
+// FriendMessage handles WebSocket connections for chat messages
+// @Summary WebSocket connection for chat messages
+// @Description Establish WebSocket connection for chat
+// @Tags Chat
+// @Security Bearer
+// @Produce application/json
+// @Router /chat [get]
 func (ch *ChatHandler) FriendMessage(c *websocket.Conn) {
 	var mu sync.Mutex
 	userID := c.Locals("user_id").(string)
@@ -47,6 +53,18 @@ func (ch *ChatHandler) FriendMessage(c *websocket.Conn) {
 		helper.SendMessageToUser(User, msg, userID)
 	}
 }
+// GetChat retrieves chat messages
+// @Summary Get Chat Messages
+// @Description Retrieve chat messages
+// @Tags Chat
+// @Security Bearer
+// @Produce application/json
+// @Param FriendID query string true "FriendID"
+// @Param Offset query string true "Offset"
+// @Param Limit query string true "Limit"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /chat/messages [get]
 func (ch *ChatHandler) GetChat(c *fiber.Ctx) error {
 	logEntry := logging.Logger().WithField("context", "GetChatHandler")
 	logEntry.Info("Processing GetChat request")

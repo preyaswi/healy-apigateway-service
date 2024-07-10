@@ -18,11 +18,10 @@ func InitializeApi(cfg config.Config) (*server.ServerHTTP, error) {
 	adminHandler := handler.NewAdminHandler(adminClient, doctorClient)
 
 	bookingHandler := handler.NewBookingHandler(adminClient)
-	paymentHandler := handler.NewPaymentHandler(adminClient)
 
 	chatClient := client.NewChatClient(cfg)
 	chatHandler := handler.NewChatHandler(chatClient)
 
-	serverHTTP := server.NewServerHTTP(patientHandler, doctorHandler, adminHandler, bookingHandler, paymentHandler, chatHandler)
+	serverHTTP := server.NewServerHTTP(patientHandler, doctorHandler, adminHandler, bookingHandler,chatHandler)
 	return serverHTTP, nil
 }

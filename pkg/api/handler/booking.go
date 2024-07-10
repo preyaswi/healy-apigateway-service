@@ -24,54 +24,15 @@ func NewBookingHandler(BookingClient interfaces.AdminClient) *BookingHandler {
 		Grpc_Client: BookingClient,
 	}
 }
-func (b *BookingHandler) AddToBookings(c *fiber.Ctx) error {
-	patientID := c.Locals("user_id").(string)
-	if patientID == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "missing patient ID in headers",
-		})
-	}
-
-	doctorIDStr := c.Query("doctor_id")
-	doctorID, err := strconv.Atoi(doctorIDStr)
-	if err != nil {
-		errs := response.ClientResponse("Doctor id is given in the wrong format", nil, err.Error())
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
-	}
-
-	err = b.Grpc_Client.AddToBookings(patientID, doctorID)
-	if err != nil {
-		errs := response.ClientResponse("couldn't book please try again", nil, err.Error())
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
-	}
-	success := response.ClientResponse("Successfully booked the doctor", nil, nil)
-	return c.Status(fiber.StatusOK).JSON(success)
-
-}
-func (b *BookingHandler) CancelBookings(c *fiber.Ctx) error {
-	patientID := c.Locals("user_id").(string)
-	if patientID == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "missing patient ID in headers",
-		})
-	}
-
-	bookingIDStr := c.Query("booking_id")
-	bookingID, err := strconv.Atoi(bookingIDStr)
-	if err != nil {
-		errs := response.ClientResponse("booking id is given in the wrong format", nil, err.Error())
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
-	}
-
-	err = b.Grpc_Client.CancelBookings(patientID, bookingID)
-	if err != nil {
-		errs := response.ClientResponse("couldn't cancel booking, please try again", nil, err.Error())
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
-	}
-	success := response.ClientResponse("Successfully cancelled booking", nil, nil)
-	return c.Status(fiber.StatusOK).JSON(success)
-
-}
+// @Summary Get Booked Patients
+// @Description Retrieve booked patients for the doctor
+// @Tags Doctor
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /doctor/patient [get]
 func (b *BookingHandler) GetBookedPatients(c *fiber.Ctx) error {
 	doctorid := c.Locals("user_id").(string)
 	doctorId, err := strconv.Atoi(doctorid)
@@ -87,6 +48,17 @@ func (b *BookingHandler) GetBookedPatients(c *fiber.Ctx) error {
 	success := response.ClientResponse("Successfully fetched booked patients", patientdetails, nil)
 	return c.Status(fiber.StatusOK).JSON(success)
 }
+// @Summary Create Prescription
+// @Description Create a prescription for a patient
+// @Tags Doctor
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param prescription body models.PrescriptionRequest true "Prescription Details"
+// @Param booking_id query string true "Booking ID"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /doctor/patient/prescription [post]
 func (b *BookingHandler) CreatePrescription(c *fiber.Ctx) error {
 	doctorid := c.Locals("user_id").(string)
 	doctorId, err := strconv.Atoi(doctorid)
@@ -94,7 +66,7 @@ func (b *BookingHandler) CreatePrescription(c *fiber.Ctx) error {
 		errs := response.ClientResponse("couldn't convert string to int", nil, err.Error())
 		return c.Status(http.StatusBadRequest).JSON(errs)
 	}
-	patientID := c.Query("patient_id")
+
 	bookingIDStr := c.Query("booking_id")
 	bookingID, err := strconv.Atoi(bookingIDStr)
 	if err != nil {
@@ -107,7 +79,6 @@ func (b *BookingHandler) CreatePrescription(c *fiber.Ctx) error {
 	}
 
 	prescription.DoctorID = doctorId
-	prescription.PatientID = patientID
 	prescription.BookingID = bookingID
 
 	if err := validator.New().Struct(prescription); err != nil {
@@ -123,6 +94,17 @@ func (b *BookingHandler) CreatePrescription(c *fiber.Ctx) error {
 	return c.Status(200).JSON(successRes)
 
 }
+// @Summary Set Doctor Availability
+// @Description Set availability for the doctor
+// @Tags Doctor
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param availability body models.SetAvailability true "Availability Details"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /doctor/profile/availability [post]
+// @Param availability body models.SetAvailability true "Availability Details" Example({"date": "2024-07-20", "starttime": "09:00", "endtime": "17:00"})
 func (b *BookingHandler) SetDoctorAvailability(c *fiber.Ctx) error {
 	doctorid := c.Locals("user_id").(string)
 	doctorId, err := strconv.Atoi(doctorid)
@@ -143,6 +125,17 @@ func (b *BookingHandler) SetDoctorAvailability(c *fiber.Ctx) error {
 	return c.Status(200).JSON(successRes)
 
 }
+// @Summary Get doctor's slot availability
+// @Description Retrieve the available slots for a doctor on a given date
+// @Tags Patient
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param doctor_id query int true "Doctor ID"
+// @Param date query string true "Date in YYYY-MM-DD format"
+// @Success 200 {object} response.Response{}
+// @Failure 500 {object} response.Response{}
+// @Router /patient/doctor/availability [get]
 func (b *BookingHandler) GetDoctorSlotAvailability(c *fiber.Ctx) error {
 	doctorId, err := strconv.Atoi(c.Query("doctor_id"))
 	if err != nil {
@@ -157,26 +150,16 @@ func (b *BookingHandler) GetDoctorSlotAvailability(c *fiber.Ctx) error {
 	successRes := response.ClientResponse("listed doctor's availabile slots", res, nil)
 	return c.Status(200).JSON(successRes)
 }
-func (b *BookingHandler) BookSlot(c *fiber.Ctx) error {
-	patientid := c.Locals("user_id").(string)
-	bookingIDStr := c.Query("booking_id")
-	bookingID, err := strconv.Atoi(bookingIDStr)
-	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert doctor ID string to int", nil, err.Error()))
-	}
-	slotIDStr := c.Query("slot_id")
-	slotID, err := strconv.Atoi(slotIDStr)
-	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(response.ClientResponse("Cannot convert doctor ID string to int", nil, err.Error()))
-	}
-	err = b.Grpc_Client.BookSlot(patientid, bookingID, slotID)
-	if err != nil {
-		errorRes := response.ClientResponse("couldn't book the slot", nil, err.Error())
-		return c.Status(http.StatusBadRequest).JSON(errorRes)
-	}
-	successRes := response.ClientResponse("slot booked for the bookingid", nil, nil)
-	return c.Status(200).JSON(successRes)
-}
+// @Summary Book a doctor
+// @Description Book a doctor for a specific slot,//user browser
+// @Tags Patient
+// @Accept json
+// @Produce html
+// @Param slot_id query int true "Slot ID"
+// @Param patient_id query string true "Patient ID"
+// @Success 200 {string} string "HTML page for payment"
+// @Failure 500 {object} response.Response{}
+// @Router /patient/bookdoctor [get]
 func (b *BookingHandler) BookDoctor(c *fiber.Ctx) error {
 	slotIdStr := c.Query("slot_id")
 	slotID, err := strconv.Atoi(slotIdStr)
@@ -192,16 +175,28 @@ func (b *BookingHandler) BookDoctor(c *fiber.Ctx) error {
 	}
 	fmt.Println(bookingdetails, "paymentdetails")
 	fmt.Println(razorId, "razorid")
+	fmt.Println(bookingdetails.PatientName,"dfghjk")
 	return c.Status(fiber.StatusOK).Render("index", fiber.Map{
 		"final_price": bookingdetails.Fees * 100,
 		"razor_id":    razorId,
-		"user_id":     bookingdetails.PatientId,
+		"user_id":     bookingdetails.PatientName,
 		"order_id":    bookingdetails.BookingId,
 		"user_email":  bookingdetails.DoctorEmail,
 		"total":       int(bookingdetails.Fees),
 	})
 }
 
+// @Summary Verify payment and create calendar entry  //redirect from book doctor
+// @Description Verify the payment and create a calendar entry for the booking
+// @Tags Patient
+// @Accept json
+// @Produce json
+// @Param booking_id query int true "Booking ID"
+// @Param payment_id query string true "Payment ID"
+// @Param razor_id query string true "Razor ID"
+// @Success 200 {object} response.Response{}
+// @Failure 500 {object} response.Response{}
+// @Router /payment_success [get]
 func (b *BookingHandler) VerifyandCalenderCreation(c *fiber.Ctx) error {
 	logger := logging.Logger().WithField("function", "VerifyandCalenderCreation")
 	logger.Info("Payment success endpoint hit")

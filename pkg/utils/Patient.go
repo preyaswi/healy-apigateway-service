@@ -28,16 +28,28 @@ type TokenPatient struct {
 	RefreshToken string
 }
 
-// @Schema PatientDetails
+// PatientDetails represents the structure for patient details.
+// swagger:model PatientDetails
 type PatientDetails struct {
-	Fullname      string `json:"fullname"`
-	Email         string `json:"email"`
-	Gender        string `json:"gender"`
-	Contactnumber string `json:"contactnumber"`
+    // The full name of the patient
+    // example: John Doe
+    Fullname string `json:"fullname"`
+    
+    // The email address of the patient
+    // example: john.doe@example.com
+    Email string `json:"email"`
+    
+    // The gender of the patient
+    // example: male
+    Gender string `json:"gender"`
+    
+    // The contact number of the patient
+    // example: +1234567890
+    Contactnumber string `json:"contactnumber"`
 }
-
 type Patient struct {
 	BookingId     uint
+	SlotId        uint
 	PaymentStatus string
 	PatientId     uint
 	Fullname      string

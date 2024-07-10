@@ -70,48 +70,6 @@ func (ad *adminClient) AdminLogin(adminDetails models.AdminLogin) (models.TokenA
 		Token: admin.Token,
 	}, nil
 }
-func (ad *adminClient) AddToBookings(patientid string, doctorid int) error {
-	_, err := ad.Client.AddTobookings(context.Background(), &pb.Bookingreq{
-		PatientId: patientid,
-		DoctorId:  int32(doctorid),
-	})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-func (ad *adminClient) CancelBookings(patientid string, bookingid int) error {
-	_, err := ad.Client.CancelBookings(context.Background(), &pb.Canbookingreq{PatientId: patientid, BookingId: int32(bookingid)})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-func (ad *adminClient) MakePaymentRazorpay(bookingid int) (models.CombinedBookingDetails, string, error) {
-	res, err := ad.Client.MakePaymentRazorpay(context.Background(), &pb.PaymentReq{BookingId: uint32(bookingid)})
-	if err != nil {
-		return models.CombinedBookingDetails{}, "", err
-	}
-	paymentdetail := models.CombinedBookingDetails{
-		BookingId:     uint(res.PaymentDetails.BookingId),
-		PatientId:     res.PaymentDetails.PatientId,
-		DoctorId:      uint(res.PaymentDetails.DoctorId),
-		DoctorName:    res.PaymentDetails.DoctorName,
-		DoctorEmail:   res.PaymentDetails.DoctorEmail,
-		Fees:          res.PaymentDetails.Fees,
-		PaymentStatus: res.PaymentDetails.PaymentStatus,
-	}
-	razor_id := res.Razorid
-	return paymentdetail, razor_id, nil
-
-}
-func (ad *adminClient) VerifyPayment(booking_id int) error {
-	_, err := ad.Client.VerifyPayment(context.Background(), &pb.PaymentReq{BookingId: uint32(booking_id)})
-	if err != nil {
-		return err
-	}
-	return nil
-}
 func (ad *adminClient) GetPaidPatients(doctor_id int) ([]models.Patient, error) {
 	res, err := ad.Client.GetPaidPatients(context.Background(), &pb.GetPaidPatientsRequest{DoctorId: int32(doctor_id)})
 	if err != nil {
@@ -121,6 +79,7 @@ func (ad *adminClient) GetPaidPatients(doctor_id int) ([]models.Patient, error) 
 	for i, bookedPatient := range res.BookedPatients {
 		patientsDetails[i] = models.Patient{
 			BookingId:     uint(bookedPatient.BookingId),
+			SlotId: uint(bookedPatient.SlotId),
 			PaymentStatus: bookedPatient.PaymentStatus,
 			PatientId:     uint(bookedPatient.PatientDetail.Id),
 			Fullname:      bookedPatient.PatientDetail.Fullname,
@@ -135,7 +94,6 @@ func (ad *adminClient) CreatePrescription(prescription models.PrescriptionReques
 	res, err := ad.Client.CreatePrescription(context.Background(), &pb.CreatePrescriptionRequest{
 		BookingId: uint32(prescription.BookingID),
 		DoctorId:  uint32(prescription.DoctorID),
-		PatientId: prescription.PatientID,
 		Medicine:  prescription.Medicine,
 		Dosage:    prescription.Dosage,
 		Notes:     prescription.Notes,
@@ -185,17 +143,7 @@ func (ad *adminClient) GetDoctorAvailability(doctorid int, date string) ([]model
 
 	return availabilities, nil
 }
-func (ad *adminClient) BookSlot(patientid string, bookingid int, slotid int) error {
-	_, err := ad.Client.BookSlot(context.Background(), &pb.BookSlotreq{
-		BookingId: uint32(bookingid),
-		PatientId: patientid,
-		SlotId:    uint32(slotid),
-	})
-	if err != nil {
-		return err
-	}
-	return nil
-}
+
 func (ad *adminClient) BookDoctor(patientid string, slotid int) (models.CombinedBookingDetails, string, error) {
 	res, err := ad.Client.BookDoctor(context.Background(), &pb.BookDoctorreq{
 		PatientId: patientid,
@@ -206,7 +154,7 @@ func (ad *adminClient) BookDoctor(patientid string, slotid int) (models.Combined
 	}
 	paymentdetail := models.CombinedBookingDetails{
 		BookingId:     uint(res.PaymentDetails.BookingId),
-		PatientId:     res.PaymentDetails.PatientId,
+		PatientName:   res.PaymentDetails.PatientId,
 		DoctorId:      uint(res.PaymentDetails.DoctorId),
 		DoctorName:    res.PaymentDetails.DoctorName,
 		DoctorEmail:   res.PaymentDetails.DoctorEmail,

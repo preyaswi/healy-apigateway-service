@@ -2,7 +2,7 @@ package models
 
 type CombinedBookingDetails struct {
 	BookingId     uint
-	PatientId     string
+	PatientName     string
 	DoctorId      uint
 	DoctorName    string
 	DoctorEmail   string

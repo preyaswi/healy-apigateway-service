@@ -20,7 +20,16 @@ func NewDoctorHandler(DoctorClient interfaces.DoctorClient) *DoctorHandler {
 		Grpc_Client: DoctorClient,
 	}
 }
-
+// @Summary Doctor Sign Up
+// @Description Sign up a new doctor
+// @Tags Doctor
+// @Accept json
+// @Produce json
+// @Param doctor body models.DoctorSignUp true "Doctor Sign Up Details"
+// @Success 201 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /doctor/signup [post]
+// @Param doctor body models.DoctorSignUp true "Doctor Sign Up Details" Example({"full_name": "John Doe", "email": "john.doe@example.com", "phone_number": "1234567890", "password": "password123", "confirm_password": "password123", "specialization": "Cardiologist", "years_of_experience": 10, "license_number": "XYZ12345", "fees": 100})
 func (d *DoctorHandler) DoctorSignUp(c *fiber.Ctx) error {
 	var SignupDetail models.DoctorSignUp
 	if err := c.BodyParser(&SignupDetail); err != nil {
@@ -40,6 +49,16 @@ func (d *DoctorHandler) DoctorSignUp(c *fiber.Ctx) error {
 	success := response.ClientResponse("doctor created successfully", doctor, nil)
 	return c.Status(201).JSON(success)
 }
+// @Summary Doctor Login
+// @Description Log in an existing doctor
+// @Tags Doctor
+// @Accept json
+// @Produce json
+// @Param login body models.DoctorLogin true "Doctor Login Details"
+// @Success 201 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /doctor/login [post]
+// @Param login body models.DoctorLogin true "Doctor Login Details" Example({"email": "john.doe@example.com", "password": "password123"})
 func (d *DoctorHandler) DoctorLogin(c *fiber.Ctx) error {
 	var logindetail models.DoctorLogin
 	if err := c.BodyParser(&logindetail); err != nil {
@@ -60,6 +79,23 @@ func (d *DoctorHandler) DoctorLogin(c *fiber.Ctx) error {
 	success := response.ClientResponse("doctor logined succesfully", doctor, nil)
 	return c.Status(201).JSON(success)
 }
+// @Summary List Doctors
+// @Description List all doctors
+// @Tags Admin
+// @Produce application/json
+// @Success 200 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Security Bearer
+// @Router /admin/dashboard/doctors [get]
+// @Summary Get all doctors' details
+// @Description Retrieve the details of all doctors
+// @Tags Patient
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Success 200 {object} response.Response{}
+// @Failure 500 {object} response.Response{}
+// @Router /patient/doctor [get]
 func (d *DoctorHandler) DoctorsDetails(c *fiber.Ctx) error {
 	doctor, err := d.Grpc_Client.DoctorsDetails()
 	if err != nil {
@@ -69,6 +105,16 @@ func (d *DoctorHandler) DoctorsDetails(c *fiber.Ctx) error {
 	success := response.ClientResponse("doctors data fetched succesfully", doctor, nil)
 	return c.Status(201).JSON(success)
 }
+// @Summary Get individual doctor's details
+// @Description Retrieve the details of a specific doctor by ID
+// @Tags Patient
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param doctor_id path string true "Doctor ID"
+// @Success 200 {object} response.Response{}
+// @Failure 500 {object} response.Response{}
+// @Router /patient/doctor/{doctor_id} [get]
 func (d *DoctorHandler) IndividualDoctor(c *fiber.Ctx) error {
 	doctorID := c.Params("doctor_id")
 	doctor, err := d.Grpc_Client.IndividualDoctor(doctorID)
@@ -79,6 +125,15 @@ func (d *DoctorHandler) IndividualDoctor(c *fiber.Ctx) error {
 	success := response.ClientResponse("returned individual doctor data", doctor, nil)
 	return c.Status(201).JSON(success)
 }
+// @Summary Get Doctor Profile
+// @Description Retrieve doctor profile
+// @Tags Doctor
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /doctor/profile [get]
 func (d *DoctorHandler) DoctorProfile(c *fiber.Ctx) error {
 	userId := c.Locals("user_id").(string)
 	userID, err := strconv.Atoi(userId)
@@ -96,6 +151,18 @@ func (d *DoctorHandler) DoctorProfile(c *fiber.Ctx) error {
 	return c.Status(200).JSON(successRes)
 
 }
+
+// @Summary Rate a doctor
+// @Description Rate a specific doctor
+// @Tags Patient
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param doctor_id path string true "Doctor ID"
+// @Param rate body models.Rate true "Rate"
+// @Success 202 {object} response.Response{}
+// @Failure 500 {object} response.Response{}
+// @Router /patient/doctor/rate/{doctor_id} [post]
 func (d *DoctorHandler) RateDoctor(c *fiber.Ctx) error {
 	patientid := c.Locals("user_id").(string)
 	doctor_id := c.Params("doctor_id")
@@ -118,6 +185,17 @@ func (d *DoctorHandler) RateDoctor(c *fiber.Ctx) error {
 	return c.Status(202).JSON(successRes)
 
 }
+// @Summary Update Doctor Profile
+// @Description Update doctor profile
+// @Tags Doctor
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param profile body models.DoctorDetails true "Doctor Details"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /doctor/profile [put]
+// @Param profile body models.DoctorDetails true "Doctor Details" Example({"full_name": "John Doe", "email": "john.doe@example.com", "phone_number": "1234567890", "specialization": "Cardiologist", "years_of_experience": 10, "fees": 100})
 func (d *DoctorHandler) UpdateDoctorProfile(c *fiber.Ctx) error {
 	doctorid := c.Locals("user_id").(string)
 	doctorId, err := strconv.Atoi(doctorid)
